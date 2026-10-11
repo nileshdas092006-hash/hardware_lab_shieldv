@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1018" height="600" font-family="monospace" font-size="11">
+<rect width="1018" height="600" fill="white"/>
+<text x="10" y="20" font-size="14" font-weight="bold">ShieldV in 12 cycles (timing_final.S, in-order, SW0=1): lock, ignored write, call, MUL, return, overwrite, trap</text>
+<line x1="110" y1="40" x2="110" y2="590" stroke="#ddd"/>
+<text x="147.0" y="36" text-anchor="middle" fill="#888">26</text>
+<line x1="184" y1="40" x2="184" y2="590" stroke="#ddd"/>
+<text x="221.0" y="36" text-anchor="middle" fill="#888">27</text>
+<line x1="258" y1="40" x2="258" y2="590" stroke="#ddd"/>
+<text x="295.0" y="36" text-anchor="middle" fill="#888">28</text>
+<line x1="332" y1="40" x2="332" y2="590" stroke="#ddd"/>
+<text x="369.0" y="36" text-anchor="middle" fill="#888">29</text>
+<line x1="406" y1="40" x2="406" y2="590" stroke="#ddd"/>
+<text x="443.0" y="36" text-anchor="middle" fill="#888">30</text>
+<line x1="480" y1="40" x2="480" y2="590" stroke="#ddd"/>
+<text x="517.0" y="36" text-anchor="middle" fill="#888">31</text>
+<line x1="554" y1="40" x2="554" y2="590" stroke="#ddd"/>
+<text x="591.0" y="36" text-anchor="middle" fill="#888">32</text>
+<line x1="628" y1="40" x2="628" y2="590" stroke="#ddd"/>
+<text x="665.0" y="36" text-anchor="middle" fill="#888">33</text>
+<line x1="702" y1="40" x2="702" y2="590" stroke="#ddd"/>
+<text x="739.0" y="36" text-anchor="middle" fill="#888">34</text>
+<line x1="776" y1="40" x2="776" y2="590" stroke="#ddd"/>
+<text x="813.0" y="36" text-anchor="middle" fill="#888">35</text>
+<line x1="850" y1="40" x2="850" y2="590" stroke="#ddd"/>
+<text x="887.0" y="36" text-anchor="middle" fill="#888">36</text>
+<line x1="924" y1="40" x2="924" y2="590" stroke="#ddd"/>
+<text x="961.0" y="36" text-anchor="middle" fill="#888">37</text>
+<line x1="998" y1="40" x2="998" y2="590" stroke="#ddd"/>
+<text x="8" y="58">clk</text><path d="M110,64 L110,46 L147.0,46 L147.0,64 L184,64 L184,46 L221.0,46 L221.0,64 L258,64 L258,46 L295.0,46 L295.0,64 L332,64 L332,46 L369.0,46 L369.0,64 L406,64 L406,46 L443.0,46 L443.0,64 L480,64 L480,46 L517.0,46 L517.0,64 L554,64 L554,46 L591.0,46 L591.0,64 L628,64 L628,46 L665.0,46 L665.0,64 L702,64 L702,46 L739.0,46 L739.0,64 L776,64 L776,46 L813.0,46 L813.0,64 L850,64 L850,46 L887.0,46 L887.0,64 L924,64 L924,46 L961.0,46 L961.0,64 L998,64" fill="none" stroke="black"/>
+<text x="8" y="89.0">IF/ID pc</text>
+<path d="M110,85.0 L114,76 L180,76 L184,85.0 L180,94 L114,94 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="147.0" y="89.0" text-anchor="middle">750</text>
+<path d="M184,85.0 L188,76 L254,76 L258,85.0 L254,94 L188,94 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="221.0" y="89.0" text-anchor="middle">754</text>
+<path d="M258,85.0 L262,76 L328,76 L332,85.0 L328,94 L262,94 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="295.0" y="89.0" text-anchor="middle">758</text>
+<path d="M332,85.0 L336,76 L402,76 L406,85.0 L402,94 L336,94 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="369.0" y="89.0" text-anchor="middle">764</text>
+<path d="M406,85.0 L410,76 L624,76 L628,85.0 L624,94 L410,94 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="517.0" y="89.0" text-anchor="middle">768</text>
+<path d="M628,85.0 L632,76 L698,76 L702,85.0 L698,94 L632,94 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="665.0" y="89.0" text-anchor="middle">76c</text>
+<path d="M702,85.0 L706,76 L772,76 L776,85.0 L772,94 L706,94 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="739.0" y="89.0" text-anchor="middle">758</text>
+<path d="M776,85.0 L780,76 L846,76 L850,85.0 L846,94 L780,94 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="813.0" y="89.0" text-anchor="middle">75c</text>
+<path d="M850,85.0 L854,76 L920,76 L924,85.0 L920,94 L854,94 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="887.0" y="89.0" text-anchor="middle">760</text>
+<path d="M924,85.0 L928,76 L994,76 L998,85.0 L994,94 L928,94 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="961.0" y="89.0" text-anchor="middle">764</text>
+<text x="8" y="119.0">EX instr</text>
+<path d="M110,115.0 L114,106 L180,106 L184,115.0 L180,124 L114,124 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="147.0" y="119.0" text-anchor="middle">sw t3,48(~</text>
+<path d="M184,115.0 L188,106 L254,106 L258,115.0 L254,124 L188,124 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="221.0" y="119.0" text-anchor="middle">sw zero,4~</text>
+<path d="M258,115.0 L262,106 L328,106 L332,115.0 L328,124 L262,124 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="295.0" y="119.0" text-anchor="middle">jal 764 &lt;~</text>
+<path d="M332,115.0 L336,106 L402,106 L406,115.0 L402,124 L336,124 Z" fill="#eee" stroke="#333"/>
+<text x="369.0" y="119.0" text-anchor="middle">bubble</text>
+<path d="M406,115.0 L410,106 L624,106 L628,115.0 L624,124 L410,124 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="517.0" y="119.0" text-anchor="middle">mul a0,a0,a1</text>
+<path d="M628,115.0 L632,106 L698,106 L702,115.0 L698,124 L632,124 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="665.0" y="119.0" text-anchor="middle">ret</text>
+<path d="M702,115.0 L706,106 L772,106 L776,115.0 L772,124 L706,124 Z" fill="#eee" stroke="#333"/>
+<text x="739.0" y="119.0" text-anchor="middle">bubble</text>
+<path d="M776,115.0 L780,106 L846,106 L850,115.0 L846,124 L780,124 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="813.0" y="119.0" text-anchor="middle">sw t2,12(~</text>
+<path d="M850,115.0 L854,106 L920,106 L924,115.0 L920,124 L854,124 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="887.0" y="119.0" text-anchor="middle">lw ra,12(~</text>
+<path d="M924,115.0 L928,106 L994,106 L998,115.0 L994,124 L928,124 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="961.0" y="119.0" text-anchor="middle">ret</text>
+<text x="8" y="149.0">EX pc</text>
+<path d="M110,145.0 L114,136 L180,136 L184,145.0 L180,154 L114,154 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="147.0" y="149.0" text-anchor="middle">74c</text>
+<path d="M184,145.0 L188,136 L254,136 L258,145.0 L254,154 L188,154 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="221.0" y="149.0" text-anchor="middle">750</text>
+<path d="M258,145.0 L262,136 L328,136 L332,145.0 L328,154 L262,154 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="295.0" y="149.0" text-anchor="middle">754</text>
+<path d="M332,145.0 L336,136 L402,136 L406,145.0 L402,154 L336,154 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="369.0" y="149.0" text-anchor="middle">758</text>
+<path d="M406,145.0 L410,136 L624,136 L628,145.0 L624,154 L410,154 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="517.0" y="149.0" text-anchor="middle">764</text>
+<path d="M628,145.0 L632,136 L698,136 L702,145.0 L698,154 L632,154 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="665.0" y="149.0" text-anchor="middle">768</text>
+<path d="M702,145.0 L706,136 L772,136 L776,145.0 L772,154 L706,154 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="739.0" y="149.0" text-anchor="middle">76c</text>
+<path d="M776,145.0 L780,136 L846,136 L850,145.0 L846,154 L780,154 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="813.0" y="149.0" text-anchor="middle">758</text>
+<path d="M850,145.0 L854,136 L920,136 L924,145.0 L920,154 L854,154 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="887.0" y="149.0" text-anchor="middle">75c</text>
+<path d="M924,145.0 L928,136 L994,136 L998,145.0 L994,154 L928,154 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="961.0" y="149.0" text-anchor="middle">760</text>
+<text x="8" y="179.0">stall</text>
+<path d="M110,184 L184,184 L184,184 L258,184 L258,184 L332,184 L332,184 L406,184 L406,166 L480,166 L480,166 L554,166 L554,184 L628,184 L628,184 L702,184 L702,184 L776,184 L776,184 L850,184 L850,184 L924,184 L924,184 L998,184" fill="none" stroke="#06c" stroke-width="2"/>
+<text x="8" y="209.0">flush</text>
+<path d="M110,214 L184,214 L184,214 L258,214 L258,196 L332,196 L332,214 L406,214 L406,214 L480,214 L480,214 L554,214 L554,214 L628,214 L628,196 L702,196 L702,214 L776,214 L776,214 L850,214 L850,214 L924,214 L924,196 L998,196" fill="none" stroke="#06c" stroke-width="2"/>
+<text x="8" y="239.0">m_busy</text>
+<path d="M110,244 L184,244 L184,244 L258,244 L258,244 L332,244 L332,244 L406,244 L406,244 L480,244 L480,226 L554,226 L554,244 L628,244 L628,244 L702,244 L702,244 L776,244 L776,244 L850,244 L850,244 L924,244 L924,244 L998,244" fill="none" stroke="#06c" stroke-width="2"/>
+<text x="8" y="269.0">bus we</text>
+<path d="M110,256 L184,256 L184,256 L258,256 L258,274 L332,274 L332,274 L406,274 L406,274 L480,274 L480,274 L554,274 L554,274 L628,274 L628,274 L702,274 L702,274 L776,274 L776,256 L850,256 L850,274 L924,274 L924,274 L998,274" fill="none" stroke="#06c" stroke-width="2"/>
+<text x="8" y="299.0">bus addr</text>
+<path d="M110,295.0 L114,286 L254,286 L258,295.0 L254,304 L114,304 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="184.0" y="299.0" text-anchor="middle">10000030</text>
+<path d="M258,295.0 L262,286 L328,286 L332,295.0 L328,304 L262,304 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="295.0" y="299.0" text-anchor="middle">0</text>
+<path d="M332,295.0 L336,286 L402,286 L406,295.0 L402,304 L336,304 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="369.0" y="299.0" text-anchor="middle">13ffc</text>
+<path d="M406,295.0 L410,286 L624,286 L628,295.0 L624,304 L410,304 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="517.0" y="299.0" text-anchor="middle">a</text>
+<path d="M628,295.0 L632,286 L698,286 L702,295.0 L698,304 L632,304 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="665.0" y="299.0" text-anchor="middle">758</text>
+<path d="M702,295.0 L706,286 L772,286 L776,295.0 L772,304 L706,304 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="739.0" y="299.0" text-anchor="middle">10000</text>
+<path d="M776,295.0 L780,286 L920,286 L924,295.0 L920,304 L780,304 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="850.0" y="299.0" text-anchor="middle">13ffc</text>
+<path d="M924,295.0 L928,286 L994,286 L998,295.0 L994,304 L928,304 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="961.0" y="299.0" text-anchor="middle">76c</text>
+<text x="8" y="329.0">SHIELD_CTRL</text>
+<path d="M110,325.0 L114,316 L180,316 L184,325.0 L180,334 L114,334 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="147.0" y="329.0" text-anchor="middle">1</text>
+<path d="M184,325.0 L188,316 L994,316 L998,325.0 L994,334 L188,334 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="591.0" y="329.0" text-anchor="middle">13</text>
+<text x="8" y="359.0">locked</text>
+<path d="M110,364 L184,364 L184,346 L258,346 L258,346 L332,346 L332,346 L406,346 L406,346 L480,346 L480,346 L554,346 L554,346 L628,346 L628,346 L702,346 L702,346 L776,346 L776,346 L850,346 L850,346 L924,346 L924,346 L998,346" fill="none" stroke="#06c" stroke-width="2"/>
+<text x="8" y="389.0">push</text>
+<path d="M110,394 L184,394 L184,394 L258,394 L258,376 L332,376 L332,394 L406,394 L406,394 L480,394 L480,394 L554,394 L554,394 L628,394 L628,394 L702,394 L702,394 L776,394 L776,394 L850,394 L850,394 L924,394 L924,394 L998,394" fill="none" stroke="#06c" stroke-width="2"/>
+<text x="8" y="419.0">pop</text>
+<path d="M110,424 L184,424 L184,424 L258,424 L258,424 L332,424 L332,424 L406,424 L406,424 L480,424 L480,424 L554,424 L554,424 L628,424 L628,406 L702,406 L702,424 L776,424 L776,424 L850,424 L850,424 L924,424 L924,424 L998,424" fill="none" stroke="#06c" stroke-width="2"/>
+<text x="8" y="449.0">ss depth</text>
+<path d="M110,445.0 L114,436 L328,436 L332,445.0 L328,454 L114,454 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="221.0" y="449.0" text-anchor="middle">1</text>
+<path d="M332,445.0 L336,436 L698,436 L702,445.0 L698,454 L336,454 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="517.0" y="449.0" text-anchor="middle">2</text>
+<path d="M702,445.0 L706,436 L994,436 L998,445.0 L994,454 L706,454 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="850.0" y="449.0" text-anchor="middle">1</text>
+<text x="8" y="479.0">ss top</text>
+<path d="M110,475.0 L114,466 L328,466 L332,475.0 L328,484 L114,484 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="221.0" y="479.0" text-anchor="middle">38</text>
+<path d="M332,475.0 L336,466 L698,466 L702,475.0 L698,484 L336,484 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="517.0" y="479.0" text-anchor="middle">758</text>
+<path d="M702,475.0 L706,466 L994,466 L998,475.0 L994,484 L706,484 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="850.0" y="479.0" text-anchor="middle">38</text>
+<text x="8" y="509.0">ex_target</text>
+<path d="M110,505.0 L114,496 L180,496 L184,505.0 L180,514 L114,514 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="147.0" y="509.0" text-anchor="middle">77c</text>
+<path d="M184,505.0 L188,496 L254,496 L258,505.0 L254,514 L188,514 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="221.0" y="509.0" text-anchor="middle">780</text>
+<path d="M258,505.0 L262,496 L624,496 L628,505.0 L624,514 L262,514 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="443.0" y="509.0" text-anchor="middle">764</text>
+<path d="M628,505.0 L632,496 L698,496 L702,505.0 L698,514 L632,514 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="665.0" y="509.0" text-anchor="middle">758</text>
+<path d="M702,505.0 L706,496 L772,496 L776,505.0 L772,514 L706,514 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="739.0" y="509.0" text-anchor="middle">1076c</text>
+<path d="M776,505.0 L780,496 L846,496 L850,505.0 L846,514 L780,514 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="813.0" y="509.0" text-anchor="middle">764</text>
+<path d="M850,505.0 L854,496 L920,496 L924,505.0 L920,514 L854,514 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="887.0" y="509.0" text-anchor="middle">768</text>
+<path d="M924,505.0 L928,496 L994,496 L998,505.0 L994,514 L928,514 Z" fill="#e8f0fe" stroke="#333"/>
+<text x="961.0" y="509.0" text-anchor="middle">76c</text>
+<text x="8" y="539.0">mismatch</text>
+<path d="M110,544 L184,544 L184,544 L258,544 L258,544 L332,544 L332,544 L406,544 L406,544 L480,544 L480,544 L554,544 L554,544 L628,544 L628,544 L702,544 L702,544 L776,544 L776,544 L850,544 L850,544 L924,544 L924,526 L998,526" fill="none" stroke="#c00" stroke-width="2"/>
+<text x="8" y="569.0">trap</text>
+<path d="M110,574 L184,574 L184,574 L258,574 L258,574 L332,574 L332,574 L406,574 L406,574 L480,574 L480,574 L554,574 L554,574 L628,574 L628,574 L702,574 L702,574 L776,574 L776,574 L850,574 L850,574 L924,574 L924,556 L998,556" fill="none" stroke="#06c" stroke-width="2"/>
+</svg>

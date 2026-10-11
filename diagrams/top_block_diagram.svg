@@ -1,0 +1,453 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 1160" width="2000" height="1160" font-family="Helvetica, Arial, sans-serif"><style>
+.ot{font:700 19px Helvetica,Arial,sans-serif;fill:#14202e}
+.of{font:700 12.5px Helvetica,Arial,sans-serif;fill:#14202e}
+.oh{font:700 11.5px Helvetica,Arial,sans-serif;fill:#14202e}
+.ol{font:10px Helvetica,Arial,sans-serif;fill:#333}
+.os{font:italic 10.5px Helvetica,Arial,sans-serif;fill:#555}
+.om{font:10.5px Consolas,monospace;fill:#222}
+.op{font:700 10.5px Helvetica,Arial,sans-serif;fill:#4a2a7a}
+.ow{fill:none;stroke:#1f4e9e;stroke-width:1.3}
+.ow.c{stroke:#c62828;stroke-dasharray:5 3}
+.old{font:9px Helvetica,Arial,sans-serif;fill:#1f4e9e;stroke:#fff;stroke-width:3px;paint-order:stroke}
+.olc{font:9px Helvetica,Arial,sans-serif;fill:#c62828;stroke:#fff;stroke-width:3px;paint-order:stroke}
+
+</style><defs><marker id="oa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1f4e9e"/></marker><marker id="oac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker></defs><rect x="0" y="0" width="2000" height="1160" fill="#ffffff"/>
+<rect x="10" y="8" width="1980" height="50" rx="6" fill="#e8eef7" stroke="#55606e"/>
+<text x="1000.0" y="30" class="ot" text-anchor="middle">ShieldV: RV32IM processor with a hardware shadow stack (Nexys A7-100T) · top-level block diagram</text>
+<text x="1000.0" y="49" class="ol" text-anchor="middle">Every box is a real instance (or logic written inside a module, dashed) and every signal name and width is checked against the Verilog by scripts/overview.py</text>
+<rect x="10" y="66" width="1390" height="690" rx="8" fill="#dbe6fb" fill-opacity="0.35" stroke="#55606e" stroke-width="1.4"/>
+<text x="20" y="83" class="of">G1 · core_pipe.v · 3-stage in-order RV32IM pipeline (Avani: datapath · Laxmidhar: pipeline control)</text>
+<text x="150" y="98" class="os" text-anchor="start">STAGE 1 · IF / ID</text>
+<text x="780" y="98" class="os" text-anchor="start">STAGE 2 · EX</text>
+<text x="1230" y="98" class="os" text-anchor="start">STAGE 3 · MEM / WB</text>
+<g class="ob" data-mod="pc_reg"><rect x="30" y="130" width="150" height="76" rx="4" fill="#dbe6fb" stroke="#2b3440" stroke-width="1.2"/>
+<text x="36" y="144" class="oh">u_pc : pc_reg</text>
+<text x="36" y="157" class="ol">next-PC + PC logic</text>
+<text x="36" y="168.5" class="ol">hold &gt; trap &gt; redirect &gt; pc+4</text>
+<text x="36" y="180.0" class="ol">pc register</text>
+</g>
+<g class="ob" data-mod="imem"><rect x="30" y="260" width="150" height="66" rx="4" fill="#dbe6fb" stroke="#2b3440" stroke-width="1.2"/>
+<text x="36" y="274" class="oh">u_imem : imem</text>
+<text x="36" y="287" class="ol">instruction memory</text>
+<text x="36" y="298.5" class="ol">16 KB BRAM, sync read</text>
+</g>
+<g class="ob" data-mod="decoder"><rect x="215" y="330" width="170" height="92" rx="4" fill="#dbe6fb" stroke="#2b3440" stroke-width="1.2"/>
+<text x="221" y="344" class="oh">u_dec : decoder</text>
+<text x="221" y="357" class="ol">decode + control unit</text>
+<text x="221" y="368.5" class="ol">alu_op, a_pc, b_imm, reg_write,</text>
+<text x="221" y="380.0" class="ol">wb_sel, load, store, branch,</text>
+<text x="221" y="391.5" class="ol">jal, jalr, mop, illegal</text>
+</g>
+<g class="ob" data-mod="imm_gen"><rect x="215" y="432" width="170" height="40" rx="4" fill="#dbe6fb" stroke="#2b3440" stroke-width="1.2"/>
+<text x="221" y="446" class="oh">u_imm : imm_gen</text>
+<text x="221" y="459" class="ol">I / S / B / U / J immediates</text>
+</g>
+<g class="ob" data-mod="regfile"><rect x="405" y="150" width="150" height="120" rx="4" fill="#dbe6fb" stroke="#2b3440" stroke-width="1.2"/>
+<text x="411" y="164" class="oh">u_rf : regfile</text>
+<text x="411" y="177" class="ol">register file</text>
+<text x="411" y="188.5" class="ol">32 x 32</text>
+<text x="411" y="200.0" class="ol">2 read ports (async)</text>
+<text x="411" y="211.5" class="ol">1 write port</text>
+<text x="411" y="223.0" class="ol">write-through, x0 = 0</text>
+</g>
+<g class="ob" data-mod="forward_unit"><rect x="215" y="560" width="170" height="48" rx="4" fill="#d4efe9" stroke="#2b3440" stroke-width="1.2"/>
+<text x="221" y="574" class="oh">u_fwd : forward_unit</text>
+<text x="221" y="587" class="ol">MEM/WB -&gt; EX forwarding</text>
+</g>
+<g class="ob" data-mod="hazard_unit"><rect x="215" y="620" width="170" height="46" rx="4" fill="#d4efe9" stroke="#2b3440" stroke-width="1.2"/>
+<text x="221" y="634" class="oh">u_hz : hazard_unit</text>
+<text x="221" y="647" class="ol">stall: M-unit wait, ShieldV freeze</text>
+</g>
+<g class="ob" data-mod="flush_unit"><rect x="215" y="678" width="170" height="46" rx="4" fill="#d4efe9" stroke="#2b3440" stroke-width="1.2"/>
+<text x="221" y="692" class="oh">u_fl : flush_unit</text>
+<text x="221" y="705" class="ol">flush after taken branch / trap</text>
+</g>
+<g class="ob" data-mod="pipe_ifid_ex"><rect x="585" y="120" width="46" height="610" rx="4" fill="#d4efe9" stroke="#2b3440" stroke-width="1.2"/>
+<text x="591" y="134" class="oh">u_p1</text>
+<text x="591" y="147" class="ol">: pipe_ifid_ex</text>
+<text x="591" y="158.5" class="ol"></text>
+<text x="591" y="170.0" class="ol">IF/ID</text>
+<text x="591" y="181.5" class="ol">-&gt; EX</text>
+<text x="591" y="193.0" class="ol">pipeline</text>
+<text x="591" y="204.5" class="ol">register</text>
+<text x="591" y="216.0" class="ol"></text>
+<text x="591" y="227.5" class="ol">valid,</text>
+<text x="591" y="239.0" class="ol">pc,</text>
+<text x="591" y="250.5" class="ol">instr,</text>
+<text x="591" y="262.0" class="ol">rs1, rs2,</text>
+<text x="591" y="273.5" class="ol">imm,</text>
+<text x="591" y="285.0" class="ol">ctrl</text>
+</g>
+<g class="ob" data-mod="core_pipe"><polygon points="660,160 690,172.6 690,217.4 660,230" fill="#fff7d6" stroke="#2b3440" stroke-width="1.2"/>
+<text x="675.0" y="199.0" text-anchor="middle" class="oh">F</text></g>
+<g class="ob" data-mod="core_pipe"><polygon points="660,270 690,282.6 690,327.4 660,340" fill="#fff7d6" stroke="#2b3440" stroke-width="1.2"/>
+<text x="675.0" y="309.0" text-anchor="middle" class="oh">F</text></g>
+<g class="ob" data-mod="core_pipe"><polygon points="730,160 760,172.6 760,217.4 730,230" fill="#fff7d6" stroke="#2b3440" stroke-width="1.2"/>
+<text x="745.0" y="199.0" text-anchor="middle" class="oh">A</text></g>
+<g class="ob" data-mod="core_pipe"><polygon points="730,270 760,282.6 760,327.4 730,340" fill="#fff7d6" stroke="#2b3440" stroke-width="1.2"/>
+<text x="745.0" y="309.0" text-anchor="middle" class="oh">B</text></g>
+<g class="ob" data-mod="alu"><rect x="800" y="180" width="110" height="140" rx="4" fill="#dbe6fb" stroke="#2b3440" stroke-width="1.2"/>
+<text x="806" y="194" class="oh">u_alu : alu</text>
+<text x="806" y="207" class="ol">ALU (RV32I)</text>
+<text x="806" y="218.5" class="ol">add sub sll slt</text>
+<text x="806" y="230.0" class="ol">sltu xor srl sra</text>
+<text x="806" y="241.5" class="ol">or and pass-b</text>
+<text x="806" y="253.0" class="ol"></text>
+<text x="806" y="264.5" class="ol">op = e_alu_op[3:0]</text>
+</g>
+<g class="ob" data-mod="branch_unit"><rect x="800" y="380" width="150" height="84" rx="4" fill="#dbe6fb" stroke="#2b3440" stroke-width="1.2"/>
+<text x="806" y="394" class="oh">u_br : branch_unit</text>
+<text x="806" y="407" class="ol">branch and jump unit</text>
+<text x="806" y="418.5" class="ol">beq..bgeu compare</text>
+<text x="806" y="430.0" class="ol">target = pc+imm or rs1+imm</text>
+<text x="806" y="441.5" class="ol">link = pc + 4</text>
+</g>
+<g class="ob" data-mod="core_pipe"><rect x="980" y="380" width="150" height="64" rx="4" fill="#f4f4f4" stroke="#2b3440" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="986" y="394" class="oh">redirect logic</text>
+<text x="986" y="407" class="ol">ex_commit = e_valid &amp; ~stall</text>
+<text x="986" y="418.5" class="ol">ex_redirect = ex_commit</text>
+<text x="986" y="430.0" class="ol">  &amp; br_taken &amp; ~sh_trap</text>
+</g>
+<g class="ob" data-mod="core_pipe"><rect x="800" y="500" width="150" height="70" rx="4" fill="#f4f4f4" stroke="#2b3440" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="806" y="514" class="oh">M-unit handshake</text>
+<text x="806" y="527" class="ol">m_start pulse, m_pending reg</text>
+<text x="806" y="538.5" class="ol">m_wait = e_valid &amp; mop</text>
+<text x="806" y="550.0" class="ol">  &amp; ~m_done -&gt; stall</text>
+<text x="806" y="561.5" class="ol">logic in core_pipe.v</text>
+</g>
+<g class="ob" data-mod="lsu"><rect x="980" y="500" width="160" height="82" rx="4" fill="#d4efe9" stroke="#2b3440" stroke-width="1.2"/>
+<text x="986" y="514" class="oh">u_lsu : lsu</text>
+<text x="986" y="527" class="ol">load/store unit</text>
+<text x="986" y="538.5" class="ol">EX: byte enables, store data</text>
+<text x="986" y="550.0" class="ol">MEM/WB: load align,</text>
+<text x="986" y="561.5" class="ol">sign / zero extend</text>
+</g>
+<g class="ob" data-mod="pipe_ex_wb"><rect x="1160" y="120" width="46" height="610" rx="4" fill="#d4efe9" stroke="#2b3440" stroke-width="1.2"/>
+<text x="1166" y="134" class="oh">u_p2</text>
+<text x="1166" y="147" class="ol">: pipe_ex_wb</text>
+<text x="1166" y="158.5" class="ol"></text>
+<text x="1166" y="170.0" class="ol">EX -&gt;</text>
+<text x="1166" y="181.5" class="ol">MEM/WB</text>
+<text x="1166" y="193.0" class="ol">pipeline</text>
+<text x="1166" y="204.5" class="ol">register</text>
+<text x="1166" y="216.0" class="ol"></text>
+<text x="1166" y="227.5" class="ol">valid,</text>
+<text x="1166" y="239.0" class="ol">pc, rd,</text>
+<text x="1166" y="250.5" class="ol">alu_y,</text>
+<text x="1166" y="262.0" class="ol">m_result,</text>
+<text x="1166" y="273.5" class="ol">wb_sel</text>
+</g>
+<g class="ob" data-mod="core_pipe"><polygon points="1260,220 1300,247.0 1300,343.0 1260,370" fill="#fff7d6" stroke="#2b3440" stroke-width="1.2"/>
+<text x="1280.0" y="299.0" text-anchor="middle" class="oh">WB</text></g>
+<g class="ob" data-mod="trace_port"><rect x="1240" y="640" width="140" height="64" rx="4" fill="#d4efe9" stroke="#2b3440" stroke-width="1.2"/>
+<text x="1246" y="654" class="oh">u_tr : trace_port</text>
+<text x="1246" y="667" class="ol">IF-4 trace (registered):</text>
+<text x="1246" y="678.5" class="ol">pcs, stall, flush, retire,</text>
+<text x="1246" y="690.0" class="ol">branch, mispredict</text>
+</g>
+<path d="M105.0,206.0 L105.0,233.0 L105.0,233.0 L105.0,260.0" class="ow" marker-end="url(#oa)"><title>f_pc_next[31:0] (core_pipe.v)</title></path>
+<text x="108.0" y="219.5" class="old">f_pc_next[31:0]</text>
+<path d="M180.0,286.4 L197.0,286.0 L197.0,358.0 L215.0,357.6" class="ow" marker-end="url(#oa)"><title>f_instr[31:0] (core_pipe.v)</title></path>
+<text x="200.0" y="322.0" class="old">f_instr[31:0]</text>
+<path d="M266.0,330.0 L266.0,222.0 L405.0,222.0" class="ow" marker-end="url(#oa)"><title>d_rs1[4:0], d_rs2[4:0] (core_pipe.v)</title></path>
+<text x="335.5" y="219.0" text-anchor="middle" class="old">d_rs1[4:0], d_rs2[4:0]</text>
+<path d="M385.0,376.0 L485.0,376.0 L485.0,376.2 L585.0,376.2" class="ow" marker-end="url(#oa)"><title>d_ctrl[14:0] (control word) (core_pipe.v)</title></path>
+<text x="435.0" y="373.0" text-anchor="middle" class="old">d_ctrl[14:0] (control word)</text>
+<path d="M385.0,452.0 L485.0,452.0 L485.0,473.8 L585.0,473.8" class="ow" marker-end="url(#oa)"><title>d_imm[31:0] (core_pipe.v)</title></path>
+<text x="435.0" y="449.0" text-anchor="middle" class="old">d_imm[31:0]</text>
+<path d="M555.0,192.0 L570.0,192.0 L570.0,168.0 L585.0,168.8" class="ow" marker-end="url(#oa)"><title>d_rs1_val, d_rs2_val [31:0] (core_pipe.v)</title></path>
+<text x="562.5" y="189.0" text-anchor="middle" class="old">d_rs1_val, d_rs2_val [31:0]</text>
+<path d="M180.0,149.0 L300.0,149.0 L300.0,132.0 L585.0,132.2" class="ow" marker-end="url(#oa)"><title>f_pc[31:0] (core_pipe.v)</title></path>
+<text x="240.0" y="146.0" text-anchor="middle" class="old">f_pc[31:0]</text>
+<path d="M631.0,181.0 L645.5,181.0 L645.5,209.0 L660.0,209.0" class="ow" marker-end="url(#oa)"><title>e_rs1_raw (core_pipe.v)</title></path>
+<text x="648.5" y="195.0" class="old">e_rs1_raw</text>
+<path d="M631.0,290.8 L645.5,290.8 L645.5,319.0 L660.0,319.0" class="ow" marker-end="url(#oa)"><title>e_rs2_raw (core_pipe.v)</title></path>
+<text x="648.5" y="304.9" class="old">e_rs2_raw</text>
+<path d="M690.0,195.0 L710.0,195.0 L710.0,209.0 L730.0,209.0" class="ow" marker-end="url(#oa)"><title> (core_pipe.v)</title></path>
+<text x="700.0" y="192.0" text-anchor="middle" class="old"></text>
+<path d="M690.0,305.0 L710.0,305.0 L710.0,319.0 L730.0,319.0" class="ow" marker-end="url(#oa)"><title> (core_pipe.v)</title></path>
+<text x="700.0" y="302.0" text-anchor="middle" class="old"></text>
+<path d="M631.0,150.5 L645.0,150.5 L715.0,150.5 L715.0,177.5 L730.0,177.5" class="ow" marker-end="url(#oa)"><title>e_pc[31:0] (core_pipe.v)</title></path>
+<text x="680.0" y="147.5" text-anchor="middle" class="old">e_pc[31:0]</text>
+<path d="M631.0,364.0 L712.0,364.0 L712.0,291.0 L730.0,291.0" class="ow" marker-end="url(#oa)"><title>e_imm[31:0] (core_pipe.v)</title></path>
+<text x="671.5" y="361.0" text-anchor="middle" class="old">e_imm[31:0]</text>
+<path d="M760.0,195.0 L780.0,195.0 L780.0,215.0 L800.0,215.0" class="ow" marker-end="url(#oa)"><title>alu_a[31:0] (core_pipe.v)</title></path>
+<text x="770.0" y="192.0" text-anchor="middle" class="old">alu_a[31:0]</text>
+<path d="M760.0,305.0 L780.0,305.0 L780.0,285.0 L800.0,285.0" class="ow" marker-end="url(#oa)"><title>alu_b[31:0] (core_pipe.v)</title></path>
+<text x="770.0" y="302.0" text-anchor="middle" class="old">alu_b[31:0]</text>
+<path d="M910.0,236.0 L1035.0,236.0 L1035.0,229.8 L1160.0,229.8" class="ow" marker-end="url(#oa)"><title>alu_y[31:0] (core_pipe.v)</title></path>
+<text x="972.5" y="233.0" text-anchor="middle" class="old">alu_y[31:0]</text>
+<path d="M675.0,340.0 L675.0,414.0 L800.0,413.6" class="ow" marker-end="url(#oa)"><title>e_rs1_val, e_rs2_val (core_pipe.v)</title></path>
+<text x="737.5" y="410.8" text-anchor="middle" class="old">e_rs1_val, e_rs2_val</text>
+<path d="M950.0,405.2 L965.0,405.2 L965.0,399.2 L980.0,399.2" class="ow c" marker-end="url(#oac)"><title>br_taken (core_pipe.v)</title></path>
+<text x="957.5" y="402.2" text-anchor="middle" class="olc">br_taken</text>
+<path d="M920.0,464.0 L920.0,486.0 L150.0,486.0 L150.0,206.0" class="ow" marker-end="url(#oa)"><title>br_target[31:0] (core_pipe.v)</title></path>
+<text x="689.0" y="483.0" text-anchor="middle" class="old">br_target[31:0]</text>
+<path d="M1055.0,444.0 L1055.0,740.0 L20.0,740.0 L20.0,194.6 L30.0,194.6" class="ow c" marker-end="url(#oac)"><title>ex_redirect (core_pipe.v)</title></path>
+<text x="278.8" y="737.0" text-anchor="middle" class="olc">ex_redirect</text>
+<path d="M1010.0,444.0 L1010.0,470.0 L960.0,470.0 L960.0,701.0 L385.0,701.0" class="ow c" marker-end="url(#oac)"><title> (core_pipe.v)</title></path>
+<text x="963.0" y="585.5" class="olc"></text>
+<path d="M800.0,542.0 L560.0,542.0 L560.0,638.0 L385.0,638.4" class="ow c" marker-end="url(#oac)"><title>m_wait (core_pipe.v)</title></path>
+<text x="680.0" y="539.0" text-anchor="middle" class="olc">m_wait</text>
+<path d="M215.0,643.0 L200.0,643.0 L200.0,600.0 L12.0,600.0 L12.0,168.0 L30.0,168.0" class="ow c" marker-end="url(#oac)"><title>stall (core_pipe.v)</title></path>
+<text x="143.6" y="597.0" text-anchor="middle" class="olc">stall</text>
+<path d="M385.0,656.8 L608.0,657.0 L608.0,730.0" class="ow c" marker-end="url(#oac)"><title>stall (hold) (core_pipe.v)</title></path>
+<text x="496.5" y="653.9" text-anchor="middle" class="olc">stall (hold)</text>
+<path d="M385.0,691.8 L500.0,692.0 L500.0,718.0 L585.0,717.8" class="ow c" marker-end="url(#oac)"><title>flush_ifid (core_pipe.v)</title></path>
+<text x="442.5" y="688.9" text-anchor="middle" class="olc">flush_ifid</text>
+<path d="M1206.0,669.0 L1230.0,669.0 L1230.0,748.0 L300.0,748.0 L300.0,608.0" class="ow" marker-end="url(#oa)"><title>w_rd[4:0], w_reg_write, w_valid (core_pipe.v)</title></path>
+<text x="579.0" y="745.0" text-anchor="middle" class="old">w_rd[4:0], w_reg_write, w_valid</text>
+<path d="M351.0,560.0 L351.0,545.0 L675.0,545.0 L675.0,230.0" class="ow c" marker-end="url(#oac)"><title>fwd_a, fwd_b (core_pipe.v)</title></path>
+<text x="448.2" y="542.0" text-anchor="middle" class="olc">fwd_a, fwd_b</text>
+<path d="M631.0,449.4 L645.0,449.0 L645.0,590.0 L965.0,590.0 L965.0,541.0 L980.0,541.0" class="ow" marker-end="url(#oa)"><title>st_data = e_rs2_val (core_pipe.v)</title></path>
+<text x="805.0" y="587.0" text-anchor="middle" class="old">st_data = e_rs2_val</text>
+<path d="M1206.0,223.7 L1233.0,223.7 L1233.0,238.0 L1260.0,238.0" class="ow" marker-end="url(#oa)"><title>w_alu_y[31:0] (core_pipe.v)</title></path>
+<text x="1219.5" y="220.7" text-anchor="middle" class="old">w_alu_y[31:0]</text>
+<path d="M1206.0,303.0 L1233.0,303.0 L1233.0,275.5 L1260.0,275.5" class="ow" marker-end="url(#oa)"><title>w_m_result[31:0] (core_pipe.v)</title></path>
+<text x="1236.0" y="289.2" class="old">w_m_result[31:0]</text>
+<path d="M1124.0,500.0 L1124.0,470.0 L1235.0,470.0 L1235.0,313.0 L1260.0,313.0" class="ow" marker-end="url(#oa)"><title>w_load_data[31:0] (core_pipe.v)</title></path>
+<text x="1179.5" y="467.0" text-anchor="middle" class="old">w_load_data[31:0]</text>
+<path d="M1206.0,376.2 L1233.0,376.2 L1233.0,352.0 L1260.0,352.0" class="ow" marker-end="url(#oa)"><title>w_pc (+4 = link) (core_pipe.v)</title></path>
+<text x="1219.5" y="373.2" text-anchor="middle" class="old">w_pc (+4 = link)</text>
+<path d="M1183.0,120.0 L1183.0,108.0 L1280.0,108.0 L1280.0,220.0" class="ow" marker-end="url(#oa)"><title>w_wb_sel[1:0] (core_pipe.v)</title></path>
+<text x="1231.5" y="105.0" text-anchor="middle" class="old">w_wb_sel[1:0]</text>
+<path d="M1300.0,295.0 L1330.0,295.0 L1330.0,112.0 L480.0,112.0 L480.0,150.0" class="ow" marker-end="url(#oa)"><title>w_value[31:0] -&gt; register file write (we = w_valid &amp; w_reg_write, wa = w_rd) (core_pipe.v)</title></path>
+<text x="1333.0" y="203.5" class="old">w_value[31:0] -&gt; register file write (we = w_valid &amp; w_reg_write, wa = w_rd)</text>
+<path d="M1330.0,160.0 L1330.0,140.0 L669.0,140.0 L669.0,160.0" class="ow" marker-end="url(#oa)"><title>w_value (forwarded to EX) (core_pipe.v)</title></path>
+<text x="834.2" y="137.0" text-anchor="middle" class="old">w_value (forwarded to EX)</text>
+<rect x="1420" y="66" width="570" height="690" rx="8" fill="#fbe0e4" fill-opacity="0.35" stroke="#55606e" stroke-width="1.4"/>
+<text x="1430" y="83" class="of">G3 · ShieldV security unit · soc_top.g_shield.u_sh : shieldv.v (Priyank)</text>
+<g class="ob" data-mod="callret_detect"><rect x="1440" y="140" width="170" height="74" rx="4" fill="#fbe0e4" stroke="#2b3440" stroke-width="1.2"/>
+<text x="1446" y="154" class="oh">u_det : callret_detect</text>
+<text x="1446" y="167" class="ol">call / return detector</text>
+<text x="1446" y="178.5" class="ol">call: jal/jalr rd = x1/x5</text>
+<text x="1446" y="190.0" class="ol">return: jalr rs1 = x1/x5</text>
+<text x="1446" y="201.5" class="ol">indirect: needs lpad</text>
+</g>
+<g class="ob" data-mod="lpad_check"><rect x="1640" y="140" width="160" height="74" rx="4" fill="#fbe0e4" stroke="#2b3440" stroke-width="1.2"/>
+<text x="1646" y="154" class="oh">u_lp : lpad_check</text>
+<text x="1646" y="167" class="ol">landing-pad check</text>
+<text x="1646" y="178.5" class="ol">next instruction must</text>
+<text x="1646" y="190.0" class="ol">be lpad (auipc x0)</text>
+</g>
+<g class="ob" data-mod="shieldv"><rect x="1820" y="140" width="160" height="90" rx="4" fill="#f4f4f4" stroke="#2b3440" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="1826" y="154" class="oh">register read mux</text>
+<text x="1826" y="167" class="ol">0x30 CTRL  0x34 STAT</text>
+<text x="1826" y="178.5" class="ol">0x38 FAULT_PC</text>
+<text x="1826" y="190.0" class="ol">0x3C EXPECTED 0x40 ACTUAL</text>
+<text x="1826" y="201.5" class="ol">0x44 HANDLER</text>
+<text x="1826" y="213.0" class="ol">logic in shieldv.v</text>
+</g>
+<g class="ob" data-mod="commit_ctrl"><rect x="1440" y="250" width="170" height="64" rx="4" fill="#fbe0e4" stroke="#2b3440" stroke-width="1.2"/>
+<text x="1446" y="264" class="oh">u_cc : commit_ctrl</text>
+<text x="1446" y="277" class="ol">shadow stack controller</text>
+<text x="1446" y="288.5" class="ol">push / pop only when ex_valid</text>
+<text x="1446" y="300.0" class="ol">and not freeze / trap</text>
+</g>
+<g class="ob" data-mod="shieldv"><rect x="1640" y="250" width="160" height="64" rx="4" fill="#f4f4f4" stroke="#2b3440" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="1646" y="264" class="oh">violation</text>
+<text x="1646" y="277" class="ol">ex_valid &amp; (mismatch |</text>
+<text x="1646" y="288.5" class="ol">underflow | overflow |</text>
+<text x="1646" y="300.0" class="ol">lpad_fail)</text>
+</g>
+<g class="ob" data-mod="shadow_stack"><rect x="1440" y="350" width="170" height="92" rx="4" fill="#fbe0e4" stroke="#2b3440" stroke-width="1.2"/>
+<text x="1446" y="364" class="oh">u_ss : shadow_stack</text>
+<text x="1446" y="377" class="ol">shadow stack RAM</text>
+<text x="1446" y="388.5" class="ol">32 x 32 LUTRAM</text>
+<text x="1446" y="400.0" class="ol">pointer sp, full, empty</text>
+<text x="1446" y="411.5" class="ol">no path from the data bus</text>
+</g>
+<g class="ob" data-mod="ret_compare"><rect x="1640" y="350" width="160" height="74" rx="4" fill="#fbe0e4" stroke="#2b3440" stroke-width="1.2"/>
+<text x="1646" y="364" class="oh">u_cmp : ret_compare</text>
+<text x="1646" y="377" class="ol">return comparator</text>
+<text x="1646" y="388.5" class="ol">actual != expected</text>
+<text x="1646" y="400.0" class="ol">underflow / overflow</text>
+</g>
+<g class="ob" data-mod="shieldv"><rect x="1820" y="350" width="160" height="64" rx="4" fill="#f4f4f4" stroke="#2b3440" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="1826" y="364" class="oh">cause select</text>
+<text x="1826" y="377" class="ol">cause, expected, actual</text>
+<text x="1826" y="388.5" class="ol">for the fault registers</text>
+<text x="1826" y="400.0" class="ol">logic in shieldv.v</text>
+</g>
+<g class="ob" data-mod="shield_ctrl"><rect x="1440" y="480" width="170" height="100" rx="4" fill="#fbe0e4" stroke="#2b3440" stroke-width="1.2"/>
+<text x="1446" y="494" class="oh">u_ctrl : shield_ctrl</text>
+<text x="1446" y="507" class="ol">enable / mode register</text>
+<text x="1446" y="518.5" class="ol">bit0 enable  bit1 trap</text>
+<text x="1446" y="530.0" class="ol">bit2 count-only  bit3 lpad</text>
+<text x="1446" y="541.5" class="ol">bit4 LOCK: writes ignored</text>
+<text x="1446" y="553.0" class="ol">until reset; HANDLER reg</text>
+</g>
+<g class="ob" data-mod="violation_fsm"><rect x="1640" y="480" width="160" height="80" rx="4" fill="#fbe0e4" stroke="#2b3440" stroke-width="1.2"/>
+<text x="1646" y="494" class="oh">u_fsm : violation_fsm</text>
+<text x="1646" y="507" class="ol">violation FSM</text>
+<text x="1646" y="518.5" class="ol">NORMAL -&gt; ALARM</text>
+<text x="1646" y="530.0" class="ol">freeze or trap in the</text>
+<text x="1646" y="541.5" class="ol">same cycle</text>
+</g>
+<g class="ob" data-mod="fault_regs"><rect x="1820" y="480" width="160" height="90" rx="4" fill="#fbe0e4" stroke="#2b3440" stroke-width="1.2"/>
+<text x="1826" y="494" class="oh">u_fault : fault_regs</text>
+<text x="1826" y="507" class="ol">fault registers</text>
+<text x="1826" y="518.5" class="ol">FAULT_PC, EXPECTED,</text>
+<text x="1826" y="530.0" class="ol">ACTUAL, cause,</text>
+<text x="1826" y="541.5" class="ol">violation count</text>
+</g>
+<path d="M1508.0,214.0 L1508.0,232.0 L1508.0,232.0 L1508.0,250.0" class="ow c" marker-end="url(#oac)"><title>is_call, is_ret (shieldv.v)</title></path>
+<text x="1511.0" y="223.0" class="olc">is_call, is_ret</text>
+<path d="M1610.0,177.0 L1625.0,177.0 L1625.0,177.0 L1640.0,177.0" class="ow c" marker-end="url(#oac)"><title>needs_lpad (shieldv.v)</title></path>
+<text x="1617.5" y="174.0" text-anchor="middle" class="olc">needs_lpad</text>
+<path d="M1508.0,314.0 L1508.0,332.0 L1508.0,332.0 L1508.0,350.0" class="ow c" marker-end="url(#oac)"><title>do_push, do_pop (shieldv.v)</title></path>
+<text x="1511.0" y="323.0" class="olc">do_push, do_pop</text>
+<path d="M1610.0,386.8 L1625.0,386.8 L1625.0,379.6 L1640.0,379.6" class="ow" marker-end="url(#oa)"><title>top[31:0], empty, full (shieldv.v)</title></path>
+<text x="1617.5" y="383.8" text-anchor="middle" class="old">top[31:0], empty, full</text>
+<path d="M1720.0,350.0 L1720.0,332.0 L1720.0,332.0 L1720.0,314.0" class="ow c" marker-end="url(#oac)"><title>mismatch, underflow, overflow (shieldv.v)</title></path>
+<text x="1723.0" y="341.0" class="olc">mismatch, underflow, overflow</text>
+<path d="M1720.0,214.0 L1720.0,232.0 L1720.0,232.0 L1720.0,250.0" class="ow c" marker-end="url(#oac)"><title>lpad_fail (shieldv.v)</title></path>
+<text x="1723.0" y="223.0" class="olc">lpad_fail</text>
+<path d="M1800.0,282.0 L1810.0,282.0 L1810.0,470.0 L1768.0,470.0 L1768.0,480.0" class="ow c" marker-end="url(#oac)"><title>violation (shieldv.v)</title></path>
+<text x="1805.0" y="279.0" text-anchor="middle" class="olc">violation</text>
+<path d="M1610.0,510.0 L1625.0,510.0 L1625.0,504.0 L1640.0,504.0" class="ow c" marker-end="url(#oac)"><title>enabled, trap_mode, count_only (shieldv.v)</title></path>
+<text x="1617.5" y="507.0" text-anchor="middle" class="olc">enabled, trap_mode, count_only</text>
+<path d="M1800.0,504.0 L1810.0,504.0 L1810.0,507.0 L1820.0,507.0" class="ow c" marker-end="url(#oac)"><title>capture (shieldv.v)</title></path>
+<text x="1805.0" y="501.0" text-anchor="middle" class="olc">capture</text>
+<path d="M1900.0,414.0 L1900.0,447.0 L1900.0,447.0 L1900.0,480.0" class="ow" marker-end="url(#oa)"><title>cause, expected, actual (shieldv.v)</title></path>
+<text x="1903.0" y="430.5" class="old">cause, expected, actual</text>
+<path d="M1980.0,498.0 L1986.0,498.0 L1986.0,212.0 L1980.0,212.0" class="ow" marker-end="url(#oa)"><title> (shieldv.v)</title></path>
+<text x="1989.0" y="355.0" class="old"></text>
+<path d="M1400.0,162.2 L1420.0,162.2 L1420.0,162.2 L1440.0,162.2" class="ow" marker-end="url(#oa)"><title> (soc_top.v)</title></path>
+<text x="1410.0" y="159.2" text-anchor="middle" class="old"></text>
+<text x="1440" y="100" class="old" text-anchor="start">IF-3 core -&gt; ShieldV (from EX): ex_valid, ex_instr[31:0], ex_pc[31:0],</text>
+<text x="1440" y="113" class="old" text-anchor="start">ex_target[31:0] (= br_target), ex_link[31:0] (= pc + 4)</text>
+<path d="M1720.0,560.0 L1720.0,700.0 L1400.0,700.0" class="ow" marker-end="url(#oa)"><title>IF-3 ShieldV -&gt; core: sh_freeze (to hazard_unit), sh_trap + sh_handler_pc[31:0] (to pc_reg, flush_unit) (soc_top.v)</title></path>
+<text x="1560.0" y="697.0" text-anchor="middle" class="old">IF-3 ShieldV -&gt; core: sh_freeze (to hazard_unit), sh_trap + sh_handler_pc[31:0] (to pc_reg, flush_unit)</text>
+<rect x="10" y="772" width="1980" height="260" rx="8" fill="#fbefd9" fill-opacity="0.35" stroke="#55606e" stroke-width="1.4"/>
+<text x="20" y="789" class="of">G2 · soc_top.v · M-unit (Nishant) · bus decoder, memory and memory-mapped I/O (Nilesh)</text>
+<g class="ob" data-mod="munit"><rect x="800" y="840" width="190" height="84" rx="4" fill="#fbefd9" stroke="#2b3440" stroke-width="1.2"/>
+<text x="806" y="854" class="oh">u_m : munit</text>
+<text x="806" y="867" class="ol">multiplier / divider</text>
+<text x="806" y="878.5" class="ol">u_mul : multiplier (2 cycles)</text>
+<text x="806" y="890.0" class="ol">u_div : divider (34 cycles)</text>
+<text x="806" y="901.5" class="ol">start / busy / done (IF-1)</text>
+</g>
+<g class="ob" data-mod="bus_decoder"><rect x="30" y="840" width="200" height="90" rx="4" fill="#fde3cf" stroke="#2b3440" stroke-width="1.2"/>
+<text x="36" y="854" class="oh">u_bus : bus_decoder</text>
+<text x="36" y="867" class="ol">bus and address decoder</text>
+<text x="36" y="878.5" class="ol">0x0001_xxxx -&gt; data memory</text>
+<text x="36" y="890.0" class="ol">0x1000_00xx -&gt; I/O registers</text>
+<text x="36" y="901.5" class="ol">read data next cycle</text>
+</g>
+<g class="ob" data-mod="dmem"><rect x="290" y="840" width="160" height="70" rx="4" fill="#dbe6fb" stroke="#2b3440" stroke-width="1.2"/>
+<text x="296" y="854" class="oh">u_dmem : dmem</text>
+<text x="296" y="867" class="ol">data memory (DMEM)</text>
+<text x="296" y="878.5" class="ol">16 KB BRAM, byte enables</text>
+</g>
+<g class="ob" data-mod="led_reg"><rect x="1040" y="860" width="120" height="56" rx="4" fill="#fde3cf" stroke="#2b3440" stroke-width="1.2"/>
+<text x="1046" y="874" class="oh">u_led : led_reg</text>
+<text x="1046" y="887" class="ol">LED register</text>
+<text x="1046" y="898.5" class="ol">0x1000_0000</text>
+</g>
+<g class="ob" data-mod="soc_top"><rect x="1180" y="860" width="120" height="64" rx="4" fill="#f4f4f4" stroke="#2b3440" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="1186" y="874" class="oh">7-seg value</text>
+<text x="1186" y="887" class="ol">seg_value reg 0x...04</text>
+<text x="1186" y="898.5" class="ol">shows fault_pc</text>
+<text x="1186" y="910.0" class="ol">during an alarm</text>
+</g>
+<g class="ob" data-mod="seg7_driver"><rect x="1320" y="860" width="120" height="56" rx="4" fill="#fde3cf" stroke="#2b3440" stroke-width="1.2"/>
+<text x="1326" y="874" class="oh">u_seg</text>
+<text x="1326" y="887" class="ol">: seg7_driver</text>
+<text x="1326" y="898.5" class="ol">7-segment driver</text>
+<text x="1326" y="910.0" class="ol">8 digits</text>
+</g>
+<g class="ob" data-mod="uart_tx"><rect x="1460" y="860" width="120" height="56" rx="4" fill="#fde3cf" stroke="#2b3440" stroke-width="1.2"/>
+<text x="1466" y="874" class="oh">u_uart : uart_tx</text>
+<text x="1466" y="887" class="ol">UART TX</text>
+<text x="1466" y="898.5" class="ol">0x1000_0010</text>
+</g>
+<g class="ob" data-mod="switch_sync"><rect x="1600" y="860" width="120" height="56" rx="4" fill="#fde3cf" stroke="#2b3440" stroke-width="1.2"/>
+<text x="1606" y="874" class="oh">u_sw</text>
+<text x="1606" y="887" class="ol">: switch_sync</text>
+<text x="1606" y="898.5" class="ol">switch synchroniser</text>
+<text x="1606" y="910.0" class="ol">SW0 = protection</text>
+</g>
+<g class="ob" data-mod="perf_counters"><rect x="1740" y="860" width="150" height="70" rx="4" fill="#fde3cf" stroke="#2b3440" stroke-width="1.2"/>
+<text x="1746" y="874" class="oh">u_perf</text>
+<text x="1746" y="887" class="ol">: perf_counters</text>
+<text x="1746" y="898.5" class="ol">performance counters</text>
+<text x="1746" y="910.0" class="ol">cycles, instret, calls,</text>
+<text x="1746" y="921.5" class="ol">rets, branches, violations</text>
+</g>
+<g class="ob" data-mod="soc_top"><rect x="500" y="840" width="150" height="60" rx="4" fill="#f4f4f4" stroke="#2b3440" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="506" y="854" class="oh">I/O read mux</text>
+<text x="506" y="867" class="ol">io_rdata by io_addr</text>
+<text x="506" y="878.5" class="ol">(LED, SW, UART, counters,</text>
+<text x="506" y="890.0" class="ol">ShieldV registers)</text>
+</g>
+<g class="ob" data-mod="core_ooo"><rect x="30" y="960" width="700" height="64" rx="4" fill="#d4efe9" stroke="#2b3440" stroke-width="1.2"/>
+<text x="36" y="974" class="oh">u_core : core_ooo</text>
+<text x="36" y="987" class="ol">build option `define SHIELDV_OOO: replaces core_pipe with the out-of-order core</text>
+<text x="36" y="998.5" class="ol">(rename table, 16-entry ROB, reservation stations, LSQ, CDB, tournament predictor, BTB, RAS)</text>
+<text x="36" y="1010.0" class="ol">same IF-1 / IF-2 / IF-3 ports; ShieldV checks at the reorder-buffer head</text>
+</g>
+<path d="M860.0,570.0 L860.0,705.0 L860.8,705.0 L860.8,840.0" class="ow" marker-end="url(#oa)"><title>IF-1: m_start, m_op[2:0], m_a, m_b [31:0] (soc_top.v)</title></path>
+<text x="863.0" y="680.7" class="old">IF-1: m_start, m_op[2:0], m_a, m_b [31:0]</text>
+<path d="M952.0,840.0 L952.0,705.0 L920.0,705.0 L920.0,570.0" class="ow" marker-end="url(#oa)"><title>m_busy, m_done, m_result[31:0] (soc_top.v)</title></path>
+<text x="955.0" y="718.5" class="old">m_busy, m_done, m_result[31:0]</text>
+<path d="M1012.0,582.0 L1012.0,760.0 L90.0,760.0 L90.0,840.0" class="ow" marker-end="url(#oa)"><title>IF-2: bus_addr (= alu_y), bus_wdata, bus_wstrb[3:0], bus_we, bus_re (soc_top.v)</title></path>
+<text x="689.3" y="757.0" text-anchor="middle" class="old">IF-2: bus_addr (= alu_y), bus_wdata, bus_wstrb[3:0], bus_we, bus_re</text>
+<path d="M190.0,840.0 L190.0,767.0 L1092.0,767.0 L1092.0,582.0" class="ow" marker-end="url(#oa)"><title>bus_rdata[31:0] -&gt; lsu (load side) (soc_top.v)</title></path>
+<text x="965.7" y="764.0" text-anchor="middle" class="old">bus_rdata[31:0] -&gt; lsu (load side)</text>
+<path d="M230.0,867.0 L260.0,867.0 L260.0,861.0 L290.0,861.0" class="ow" marker-end="url(#oa)"><title>dmem_en, dmem_wstrb[3:0] (soc_top.v)</title></path>
+<text x="245.0" y="864.0" text-anchor="middle" class="old">dmem_en, dmem_wstrb[3:0]</text>
+<path d="M370.0,910.0 L370.0,938.0 L150.0,938.0 L150.0,930.0" class="ow" marker-end="url(#oa)"><title>dmem_rdata[31:0] (soc_top.v)</title></path>
+<text x="260.0" y="935.0" text-anchor="middle" class="old">dmem_rdata[31:0]</text>
+<path d="M70.0,930.0 L70.0,950.0 L1815.0,950.0 L1815.0,930.0" class="ow" marker-end="url(#oa)"><title>io_we, io_addr[7:0], io_wdata[31:0] -&gt; LED, 7-seg, UART, counters and the ShieldV registers (reg_we / reg_addr / reg_wdata) (soc_top.v)</title></path>
+<text x="1029.8" y="947.0" text-anchor="middle" class="old">io_we, io_addr[7:0], io_wdata[31:0] -&gt; LED, 7-seg, UART, counters and the ShieldV registers (reg_we / reg_addr / reg_wdata)</text>
+<path d="M1100.0,950 L1100.0,916" class="ow" marker-end="url(#oa)"/>
+<path d="M1240.0,950 L1240.0,924" class="ow" marker-end="url(#oa)"/>
+<path d="M1520.0,950 L1520.0,916" class="ow" marker-end="url(#oa)"/>
+<path d="M500.0,870.0 L365.0,870.0 L365.0,912.0 L230.0,912.0" class="ow" marker-end="url(#oa)"><title>io_rdata[31:0] (soc_top.v)</title></path>
+<text x="432.5" y="867.0" text-anchor="middle" class="old">io_rdata[31:0]</text>
+<path d="M1900.0,570.0 L1900.0,790.0 L1240.0,790.0 L1240.0,860.0" class="ow" marker-end="url(#oa)"><title>alarm, fault_pc[31:0] (soc_top.v)</title></path>
+<text x="1504.0" y="787.0" text-anchor="middle" class="old">alarm, fault_pc[31:0]</text>
+<path d="M1300.0,885.6 L1310.0,885.6 L1310.0,882.4 L1320.0,882.4" class="ow" marker-end="url(#oa)"><title> (soc_top.v)</title></path>
+<text x="1305.0" y="882.6" text-anchor="middle" class="old"></text>
+<path d="M1660.0,860.0 L1660.0,780.0 L1428.0,780.0 L1428.0,565.0 L1440.0,565.0" class="ow c" marker-end="url(#oac)"><title>sw[0] -&gt; sw_enable (soc_top.v)</title></path>
+<text x="1431.0" y="672.5" class="olc">sw[0] -&gt; sw_enable</text>
+<path d="M1980.0,185.0 L1994.0,185.0 L1994.0,812.0 L575.0,812.0 L575.0,840.0" class="ow" marker-end="url(#oa)"><title>shield_rdata[31:0] (soc_top.v)</title></path>
+<text x="1781.2" y="809.0" text-anchor="middle" class="old">shield_rdata[31:0]</text>
+<path d="M1296.0,704.0 L1296.0,840.0 L1785.0,840.0 L1785.0,860.0" class="ow c" marker-end="url(#oac)"><title>IF-4: tr_retire, tr_branch, tr_mispredict (soc_top.v)</title></path>
+<text x="1540.5" y="837.0" text-anchor="middle" class="olc">IF-4: tr_retire, tr_branch, tr_mispredict</text>
+<rect x="10" y="1042" width="1980" height="40" rx="6" fill="#efe8fb" stroke="#55606e"/>
+<text x="20" y="1066" class="of" text-anchor="start">Nexys A7-100T pins (fpga_top.v)</text>
+<text x="1100" y="1067" class="op" text-anchor="middle">LED[15:0]</text>
+<text x="1380" y="1067" class="op" text-anchor="middle">CA..CG, DP, AN[7:0]</text>
+<text x="1520" y="1067" class="op" text-anchor="middle">UART_RXD_OUT</text>
+<text x="1660" y="1067" class="op" text-anchor="middle">SW[15:0]</text>
+<text x="600" y="1067" class="op" text-anchor="middle">CLK100MHZ, CPU_RESETN -&gt; u_clk : clk_rst (50 MHz)</text>
+<path d="M1100.0,916.0 L1100.0,984.0 L1100.0,984.0 L1100.0,1052.0" class="ow" marker-end="url(#oa)"><title>led[15:0] (soc_top.v)</title></path>
+<text x="1103.0" y="950.0" class="old">led[15:0]</text>
+<path d="M1380.0,916.0 L1380.0,984.0 L1380.0,984.0 L1380.0,1052.0" class="ow" marker-end="url(#oa)"><title>seg[6:0], an[7:0] (soc_top.v)</title></path>
+<text x="1383.0" y="950.0" class="old">seg[6:0], an[7:0]</text>
+<path d="M1520.0,916.0 L1520.0,984.0 L1520.0,984.0 L1520.0,1052.0" class="ow c" marker-end="url(#oac)"><title>uart_txd (soc_top.v)</title></path>
+<text x="1523.0" y="950.0" class="olc">uart_txd</text>
+<path d="M1660.0,1052.0 L1660.0,984.0 L1660.0,984.0 L1660.0,916.0" class="ow" marker-end="url(#oa)"><title>sw_raw[15:0] (soc_top.v)</title></path>
+<text x="1663.0" y="1018.0" class="old">sw_raw[15:0]</text>
+<rect x="10" y="1092" width="1980" height="58" rx="6" fill="#ffffff" stroke="#55606e"/>
+<rect x="24" y="1104" width="16" height="12" fill="#dbe6fb" stroke="#2b3440"/>
+<text x="46" y="1114" class="ol" text-anchor="start">G1 Avani · datapath</text>
+<rect x="254" y="1104" width="16" height="12" fill="#d4efe9" stroke="#2b3440"/>
+<text x="276" y="1114" class="ol" text-anchor="start">G1 Laxmidhar · pipeline control</text>
+<rect x="484" y="1104" width="16" height="12" fill="#fbefd9" stroke="#2b3440"/>
+<text x="506" y="1114" class="ol" text-anchor="start">G2 Nishant · M-unit</text>
+<rect x="714" y="1104" width="16" height="12" fill="#fde3cf" stroke="#2b3440"/>
+<text x="736" y="1114" class="ol" text-anchor="start">G2 Nilesh · SoC / I/O</text>
+<rect x="944" y="1104" width="16" height="12" fill="#fbe0e4" stroke="#2b3440"/>
+<text x="966" y="1114" class="ol" text-anchor="start">G3 Priyank · ShieldV</text>
+<rect x="1174" y="1104" width="16" height="12" fill="#f4f4f4" stroke="#2b3440"/>
+<text x="1196" y="1114" class="ol" text-anchor="start">logic inside a module (dashed)</text>
+<rect x="1404" y="1104" width="16" height="12" fill="#fff7d6" stroke="#2b3440"/>
+<text x="1426" y="1114" class="ol" text-anchor="start">multiplexer</text>
+<path d="M24,1136 L84,1136" class="ow" marker-end="url(#oa)"/>
+<text x="90" y="1140" class="ol" text-anchor="start">data (name + width)</text>
+<path d="M260,1136 L320,1136" class="ow c" marker-end="url(#oac)"/>
+<text x="326" y="1140" class="ol" text-anchor="start">1-bit control</text>
+<text x="480" y="1140" class="ol" text-anchor="start">clk and rst_n go to every block (not drawn). Memory map and interfaces: docs/interfaces.md.</text></svg>

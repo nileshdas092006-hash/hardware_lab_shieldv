@@ -1,0 +1,1126 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>ShieldV Build Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout concept: a processor datasheet. One wide column, a sticky section rail,
+   module colours (A cobalt / B ochre / C crimson / integration teal) carry meaning everywhere. */
+:root{
+  --paper:#f5f7fa; --panel:#ffffff; --ink:#13202f; --muted:#566578; --line:#d4dbe4; --soft:#e9eef4;
+  --a:#2456c4; --a-t:#e6edfb; --b:#a66400; --b-t:#fbf0de; --c:#bf2338; --c-t:#fbe6e9;
+  --s:#7a3fb0; --s-t:#f1e8fa; --i:#0f7a69; --i-t:#e0f3ef; --x:#6b7686; --x-t:#eef1f5;
+  --hi:#13202f;
+  --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0e131a; --panel:#141b25; --ink:#e4eaf2; --muted:#93a1b3; --line:#283445; --soft:#1a2330;
+  --a:#7aa2ff; --a-t:#16233f; --b:#e6a640; --b-t:#2c2214; --c:#ff6e81; --c-t:#341a20;
+  --s:#c497f0; --s-t:#261c33; --i:#43c7b0; --i-t:#11302b; --x:#9aa6b6; --x-t:#1c2430; --hi:#e4eaf2;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0e131a; --panel:#141b25; --ink:#e4eaf2; --muted:#93a1b3; --line:#283445; --soft:#1a2330;
+  --a:#7aa2ff; --a-t:#16233f; --b:#e6a640; --b-t:#2c2214; --c:#ff6e81; --c-t:#341a20;
+  --s:#c497f0; --s-t:#261c33; --i:#43c7b0; --i-t:#11302b; --x:#9aa6b6; --x-t:#1c2430; --hi:#e4eaf2;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:0 64px}
+a{color:var(--a)} a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0}
+h1{font-size:clamp(40px,7vw,76px);font-variation-settings:"wdth" 70;font-weight:800;line-height:.95;letter-spacing:-.01em}
+h2{font-size:clamp(26px,3.4vw,36px);font-variation-settings:"wdth" 78;font-weight:750;line-height:1.05}
+h3{font-size:19px;font-variation-settings:"wdth" 85;font-weight:700}
+p{margin:0;max-width:72ch}
+code,.mono{font-family:var(--f-mono);font-size:.86em}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+/* nav rail */
+.rail{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.rail .in{max-width:1180px;margin:0 auto;padding-inline:20px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.rail a{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);text-decoration:none;padding:12px 10px;white-space:nowrap;border-bottom:2px solid transparent}
+.rail a:hover{color:var(--ink);border-bottom-color:var(--c)}
+/* hero */
+.hero{padding-block:44px 28px;display:grid;gap:22px;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);align-items:end}
+.hero .lede{font-size:18.5px;color:var(--ink)}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--f-mono);font-size:12px;border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:var(--panel);color:var(--ink)}
+.chip b{color:var(--c);font-weight:600}
+.spec{border:1px solid var(--line);background:var(--panel);border-radius:8px;overflow:hidden}
+.spec table{width:100%;border-collapse:collapse;font-size:14px}
+.spec td{padding:8px 12px;border-top:1px solid var(--line);vertical-align:top}
+.spec tr:first-child td{border-top:0}
+.spec td:first-child{font-family:var(--f-mono);font-size:12px;color:var(--muted);white-space:nowrap;width:1%}
+section{padding-block:44px 8px;border-top:1px solid var(--line)}
+.sec-head{display:grid;gap:8px;margin-bottom:22px}
+.sec-head p{color:var(--muted)}
+/* tiers */
+.tiers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:22px}
+.tier{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;display:grid;gap:8px;align-content:start}
+.tier .tag{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase}
+.tier.commit{border-top:3px solid var(--c)} .tier.goal{border-top:3px dashed var(--b)} .tier.stretch{border-top:3px dotted var(--s)}
+.tier ul{margin:0;padding-left:18px;font-size:14.5px;display:grid;gap:4px}
+/* map */
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin-bottom:10px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:14px;border-radius:3px;display:inline-block;border:2px solid}
+.ln{width:22px;height:0;border-top:2px solid var(--muted);display:inline-block}
+.map-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+#map-svg{display:block;min-width:900px;width:100%;height:auto}
+#map-svg text{font-family:var(--f-body)}
+.region rect{fill:none;stroke:var(--line);stroke-width:1.5}
+.region text{font-family:var(--f-mono)!important;font-size:11px;letter-spacing:.06em;fill:var(--muted);text-transform:uppercase}
+.blk{cursor:pointer}
+.blk rect{stroke-width:1.6}
+.blk .bid{font-family:var(--f-mono)!important;font-size:10px;font-weight:600}
+.blk .bnm{font-size:12.5px;fill:var(--ink)}
+.blk.A rect{fill:var(--a-t);stroke:var(--a)} .blk.A .bid{fill:var(--a)}
+.blk.B rect{fill:var(--b-t);stroke:var(--b)} .blk.B .bid{fill:var(--b)}
+.blk.C rect{fill:var(--c-t);stroke:var(--c)} .blk.C .bid{fill:var(--c)}
+.blk.S rect{fill:var(--s-t);stroke:var(--s)} .blk.S .bid{fill:var(--s)}
+.blk.g rect{stroke-dasharray:6 4} .blk.s rect{stroke-dasharray:2 3}
+.blk:hover rect,.blk.on rect{stroke-width:3.2}
+.blk.on .bnm{font-weight:700}
+.wire{fill:none;stroke:var(--muted);stroke-width:1.6}
+.wire.sec{stroke:var(--c)}
+.wlab{font-family:var(--f-mono)!important;font-size:10.5px;fill:var(--muted)}
+.wlab.sec{fill:var(--c)}
+.ghost rect{fill:none;stroke:var(--line);stroke-dasharray:4 4}
+.ghost text{font-size:12px;fill:var(--muted)}
+.detail{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px 20px;display:grid;gap:12px}
+.detail .did{font-family:var(--f-mono);font-size:12px}
+.detail h3{font-size:22px}
+.detail dl{margin:0;display:grid;gap:14px 28px;grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:700px){.detail dl{grid-template-columns:minmax(0,1fr)}}
+.detail dt{font-family:var(--f-mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.detail dd{margin:2px 0 0;font-size:14.5px}
+.pill{display:inline-block;font-family:var(--f-mono);font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);margin-right:4px}
+/* modules */
+.mods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.mod{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;display:grid;align-content:start;min-width:0}
+.mod header{padding:14px 16px;display:grid;gap:4px;border-bottom:1px solid var(--line)}
+.mod.A header{background:var(--a-t)} .mod.B header{background:var(--b-t)} .mod.C header{background:var(--c-t)}
+.mod header .who{font-family:var(--f-mono);font-size:12px}
+.mod.A .who{color:var(--a)} .mod.B .who{color:var(--b)} .mod.C .who{color:var(--c)}
+.mod ol{list-style:none;margin:0;padding:6px 0}
+.mod li{padding:9px 16px;border-top:1px solid var(--soft);font-size:14px;display:grid;gap:2px;cursor:pointer}
+.mod li:first-child{border-top:0}
+.mod li:hover{background:var(--soft)}
+.mod li .row{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.mod li .id{font-family:var(--f-mono);font-size:11.5px;font-weight:600;min-width:28px}
+.mod.A .id{color:var(--a)} .mod.B .id{color:var(--b)} .mod.C .id{color:var(--c)}
+.mod li .nm{font-weight:700}
+.mod li .why{color:var(--muted);font-size:13.5px}
+.tierdot{font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
+.mod .foot{border-top:1px solid var(--line);padding:12px 16px;display:grid;gap:8px;font-size:13.5px;background:var(--soft)}
+.mod .foot b{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.subhead{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:12px 16px 2px}
+pre{margin:0;font-family:var(--f-mono);font-size:12.5px;line-height:1.55;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:14px 16px;overflow-x:auto;color:var(--ink)}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:18px}
+.note{border-left:3px solid var(--i);padding:10px 14px;background:var(--i-t);border-radius:0 8px 8px 0;font-size:14.5px;max-width:none}
+.note.warn{border-left-color:var(--c);background:var(--c-t)}
+/* ladder */
+.ladder{display:grid;gap:0;position:relative}
+.rung{display:grid;grid-template-columns:86px minmax(0,1fr);gap:16px;position:relative;padding-bottom:18px}
+.rung::before{content:"";position:absolute;left:42px;top:44px;bottom:0;width:2px;background:var(--i)}
+.rung:last-child::before{display:none}
+.rung .num{width:86px;height:44px;border:2px solid var(--i);border-radius:8px;display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:22px;font-variation-settings:"wdth" 75;color:var(--i);background:var(--panel)}
+.rung .num small{display:block;font-family:var(--f-mono);font-size:10px;font-weight:400;color:var(--muted);line-height:1}
+.rung .body{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;gap:8px;min-width:0}
+.rung .top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+.stack{display:flex;flex-wrap:wrap;gap:5px}
+.stack span{font-family:var(--f-mono);font-size:11px;padding:2px 7px;border-radius:4px;border:1px solid}
+.stack .A{color:var(--a);border-color:var(--a);background:var(--a-t)} .stack .B{color:var(--b);border-color:var(--b);background:var(--b-t)}
+.stack .C{color:var(--c);border-color:var(--c);background:var(--c-t)} .stack .S{color:var(--s);border-color:var(--s);background:var(--s-t)}
+.stack .stub{color:var(--muted);border-color:var(--line);border-style:dashed;background:transparent}
+.gate{font-size:14px} .gate b{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--i)}
+.course{font-family:var(--f-mono);font-size:12px;color:var(--c)}
+/* gantt */
+.gantt{min-width:900px;display:grid;grid-template-columns:150px repeat(6,minmax(0,1fr));border:1px solid var(--line);border-radius:8px;background:var(--panel);overflow:hidden}
+.gantt .h{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);padding:10px 8px;border-bottom:1px solid var(--line);border-left:1px solid var(--soft)}
+.gantt .h b{display:block;color:var(--ink);font-size:12px}
+.gantt .lane{font-family:var(--f-mono);font-size:12px;font-weight:600;padding:10px;border-top:1px solid var(--soft);display:flex;align-items:center}
+.gantt .bar{margin:6px 4px;padding:7px 9px;border-radius:6px;font-size:12.5px;line-height:1.35;border:1px solid;align-self:stretch}
+.gantt .cell{border-top:1px solid var(--soft);border-left:1px solid var(--soft)}
+.bar.A{background:var(--a-t);border-color:var(--a)} .bar.B{background:var(--b-t);border-color:var(--b)}
+.bar.C{background:var(--c-t);border-color:var(--c)} .bar.S{background:var(--s-t);border-color:var(--s)}
+.bar.I{background:var(--i-t);border-color:var(--i)} .bar.D{background:transparent;border-color:var(--c);border-style:dashed;font-family:var(--f-mono);font-size:11.5px;color:var(--c)}
+/* timing */
+#wave{display:block;min-width:860px;width:100%;height:auto}
+#wave text{font-family:var(--f-mono);font-size:11px;fill:var(--ink)}
+#wave .lbl{fill:var(--muted)}
+#wave .sig{stroke:var(--ink);stroke-width:1.5;fill:none}
+#wave .bus{stroke:var(--ink);stroke-width:1.2;fill:var(--panel)}
+#wave .bus.alert{fill:var(--c-t);stroke:var(--c)}
+#wave .hi{stroke:var(--c);stroke-width:2}
+#wave .grid{stroke:var(--soft);stroke-width:1}
+#wave .clk{stroke:var(--muted);stroke-width:1.2;fill:none}
+/* tables */
+.tbl{width:100%;border-collapse:collapse;font-size:14px;background:var(--panel)}
+.tbl th{text-align:left;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line)}
+.tbl td{padding:10px 12px;border-top:1px solid var(--soft);vertical-align:top}
+.tbl td:first-child{font-weight:700;white-space:nowrap}
+.tbl .num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+/* env stack */
+.env{display:grid;gap:8px}
+.layer{display:grid;grid-template-columns:200px minmax(0,1fr);gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.layer .ln2{font-family:var(--f-display);font-weight:750;font-variation-settings:"wdth" 80;font-size:18px}
+.layer .ln2 small{display:block;font-family:var(--f-mono);font-size:11px;font-weight:400;color:var(--muted);letter-spacing:.05em}
+.layer ul{margin:0;padding-left:18px;font-size:14.5px;display:grid;gap:3px}
+/* loop */
+.loop{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;counter-reset:st}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;display:grid;gap:6px;align-content:start;position:relative}
+.step::before{counter-increment:st;content:counter(st);font-family:var(--f-display);font-weight:800;font-size:28px;line-height:1;color:var(--c);font-variation-settings:"wdth" 70}
+.step b{font-size:15px}
+.step p{font-size:13.5px;color:var(--muted)}
+/* library */
+.lib{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.track{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;min-width:0}
+.track header{padding:12px 16px;border-bottom:1px solid var(--line);display:grid;gap:2px}
+.track ul{list-style:none;margin:0;padding:0}
+.track li{padding:10px 16px;border-top:1px solid var(--soft);font-size:14px;display:grid;gap:2px}
+.track li:first-child{border-top:0}
+.track li a{font-weight:700}
+.track li span{color:var(--muted);font-size:13px}
+details{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:0 16px}
+details+details{margin-top:8px}
+summary{cursor:pointer;padding:12px 0;font-weight:700;font-size:15px}
+details p{padding-bottom:14px;font-size:14.5px;color:var(--ink)}
+/* framework */
+.fw{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.rule{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;display:grid;gap:6px;align-content:start}
+.rule b{font-family:var(--f-display);font-size:19px;font-variation-settings:"wdth" 80;font-weight:750}
+.rule p{font-size:13.5px;color:var(--muted)}
+.dod{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel);margin-top:14px}
+.dod div{padding:12px;border-left:1px solid var(--line);font-size:13.5px;display:grid;gap:4px;align-content:start}
+.dod div:first-child{border-left:0}
+.dod span{font-family:var(--f-mono);font-size:11px;color:var(--i);letter-spacing:.06em;text-transform:uppercase}
+.sources{font-size:13px;color:var(--muted);columns:2;column-gap:28px}
+.sources a{word-break:break-word}
+.sources p{margin-bottom:5px;break-inside:avoid}
+@media (max-width:980px){
+  .hero,.map-grid,.two{grid-template-columns:minmax(0,1fr)}
+  .detail{position:static}
+  .mods,.tiers,.lib{grid-template-columns:minmax(0,1fr)}
+  .loop{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .fw{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dod{grid-template-columns:minmax(0,1fr)} .dod div{border-left:0;border-top:1px solid var(--line)} .dod div:first-child{border-top:0}
+  .layer{grid-template-columns:minmax(0,1fr)}
+  .sources{columns:1}
+}
+@media (max-width:560px){ .loop{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} .fw{grid-template-columns:minmax(0,1fr)} .rung{grid-template-columns:64px minmax(0,1fr)} .rung .num{width:64px} .rung::before{left:31px} }
+@media (prefers-reduced-motion:no-preference){ .blk rect{transition:stroke-width .12s} }
+</style>
+
+<nav class="rail" aria-label="Sections"><div class="in">
+  <a href="#scope">Scope</a><a href="#map">System map</a><a href="#modules">3 modules</a><a href="#ladder">Integration</a><a href="#roadmap">Roadmap</a><a href="#correct">What correct looks like</a><a href="#ai">AI setup</a><a href="#learn">Learn &amp; viva</a><a href="#marks">Marks &amp; risks</a><a href="#framework">Framework</a>
+</div></nav>
+
+<div class="wrap">
+
+<header class="hero" id="scope">
+  <div style="display:grid;gap:16px">
+    <div class="eyebrow">CS2202L Hardware Lab · IIT Guwahati · Group 8 · Team of 5 · updated Oct 11 for the new abstract</div>
+    <h1>ShieldV<br>Build Plan</h1>
+    <p class="lede">An RV32IM processor that refuses to be hijacked, with two interchangeable cores: a 3-stage in-order pipeline (the committed baseline) and an out-of-order Tomasulo core (the extension), both protected by the same hardware shadow stack. Five people in three groups build against frozen interfaces and join one rung at a time, to the final demo (Nov 7–8).</p>
+    <div class="chip-row">
+      <span class="chip"><b>Oct 4</b> abstract</span><span class="chip"><b>Oct 11</b> abstract v2</span><span class="chip"><b>Oct 11</b> block diagram</span><span class="chip"><b>Oct 13</b> presentation</span><span class="chip"><b>Oct 25</b> status</span><span class="chip"><b>Oct 27</b> mini-demo</span><span class="chip"><b>Oct 22</b> M3 SoC on FPGA</span><span class="chip"><b>Nov 1</b> M5 minimum system · near-final</span><span class="chip"><b>Nov 2–6</b> M6 out-of-order + evaluation</span><span class="chip"><b>Nov 5</b> report + video</span><span class="chip"><b>Nov 7–8</b> final demo</span>
+    </div>
+  </div>
+  <div class="spec"><table>
+    <tr><td>ISA</td><td>RV32I + M (multiply/divide), bare metal</td></tr>
+    <tr><td>Cores</td><td>Build option: 3-stage in-order (IF/ID · EX · MEM/WB, default) or out-of-order Tomasulo (rename table, 16-entry ROB, reservation stations, load/store queue, CDB, tournament predictor, BTB, return-address stack). ShieldV checks returns from EX (in-order) or at ROB commit (out-of-order) over the same IF-3 wires</td></tr>
+    <tr><td>Security</td><td>Hardware shadow stack checks every function return; a lock bit makes the control and handler registers read-only after boot; landing pads for indirect jumps (goal). Inspired by the ratified RISC-V CFI extensions (Zicfiss / Zicfilp)</td></tr>
+    <tr><td>Board</td><td>Nexys A7-100T (Artix-7). Inferred from the course repo's pin constraints; confirm with the lab</td></tr>
+    <tr><td>Demo</td><td><b>Input:</b> a C program with a hidden overflow + the protection switch. <b>Processing:</b> the core runs it while ShieldV checks every return. <b>Output:</b> off → LEDs show HACKED; on → trap before the first attacker instruction, red alarm LED, fault PC on the 7-segment display, UART report; a write to the locked control register is ignored. Either the in-order or the out-of-order bitstream can be loaded</td></tr>
+  </table></div>
+</header>
+
+<div class="tiers">
+  <div class="tier commit"><span class="tag" style="color:var(--c)">Commitment · must work by Nov 1</span>
+    <ul><li>RV32IM 3-stage in-order pipeline on the FPGA, with forwarding, stalls and flushes</li><li>5+ C programs compiled with <code>-march=rv32im</code>, results on UART + 7-segment</li><li>32-entry shadow stack; trap handler reports faulting PC, expected and actual address on UART and the display</li><li>SW0 turns protection on and off</li><li><b>Lock bit:</b> after boot code enables protection and locks, the control and handler registers ignore all writes until reset</li><li>ShieldV's own clock and LUT cost, measured with and without it</li></ul></div>
+  <div class="tier goal"><span class="tag" style="color:var(--b)">Goal · Nov 2–6</span>
+    <ul><li>Out-of-order Tomasulo core (16-entry ROB, RS, LSQ, CDB, tournament predictor, BTB, RAS); ShieldV checks at commit; in-order build stays the fallback</li><li>Landing-pad check for indirect jumps (forward edge, Zicfilp-inspired)</li><li>Stack canaries (<code>-fstack-protector</code>) compared with ShieldV</li><li>CPI of both cores; branch-prediction accuracy (≥ 85 %)</li><li>Performance counters: cycles, instructions, branches, calls, returns, violations</li><li>Three ShieldV safety properties proven with SymbiYosys; random programs vs a golden model</li></ul></div>
+  <div class="tier stretch"><span class="tag" style="color:var(--s)">Stretch · if time remains</span>
+    <ul><li>Two-wide dispatch in the out-of-order core</li><li>Decode the real Zicfiss instructions (<code>sspush</code>, <code>sspopchk</code>, <code>ssrdp</code>) and spill the shadow stack to protected memory</li><li>Machine / user privilege modes</li></ul></div>
+</div>
+
+<div class="tblwrap" style="margin-top:14px"><table class="tbl">
+  <thead><tr><th>Design goal (for the abstract)</th><th>Target</th><th>How it is measured</th></tr></thead>
+  <tbody>
+    <tr><td>Correctness</td><td class="num">100% rv32ui + rv32um, both cores</td><td>riscv-tests; workloads match a reference (Spike, or our golden model); random differential tests</td></tr>
+    <tr><td>Detection</td><td class="num">0 attacker instructions</td><td>Mismatch trapped before the redirect: simulation trace, ILA capture</td></tr>
+    <tr><td>Lock integrity</td><td class="num">0 changes after lock</td><td>Directed write tests; formal proof (planned)</td></tr>
+    <tr><td>Protection overhead</td><td class="num">+0 cycles per call/return</td><td>Cycle counters with protection off/on; Vivado with vs without ShieldV</td></tr>
+    <tr><td>MUL / DIV latency</td><td class="num">≤2 / ≤34 cycles</td><td>Testbench cycle counts</td></tr>
+    <tr><td>Clock</td><td class="num">≥50 MHz in-order (target 100); out-of-order as measured</td><td>Vivado timing report</td></tr>
+    <tr><td>Out-of-order speed</td><td class="num">≥1.0× geomean vs in-order</td><td>CPI per workload from the performance counters</td></tr>
+    <tr><td>Branch prediction</td><td class="num">≥85% correct</td><td>BRANCHES and MISPRED counters</td></tr>
+    <tr><td>Resources</td><td class="num">ShieldV ≤500 LUTs, 0 BRAM; SoC ≤25% (15,850 LUTs)</td><td>Vivado utilization report</td></tr>
+    <tr><td>Security correctness</td><td class="num">0 false alarms, 100% injected caught</td><td>Test matrix, fault injection, canary comparison</td></tr>
+  </tbody></table></div>
+
+<div class="note" style="margin-top:14px"><b>Where the code is on Oct 11.</b> Everything in the commitment tier and most of the goal tier is written and passes in simulation on the lab laptop (Vivado xsim): the lock bit, both cores (48/48 riscv-tests each), all C programs and attacks on both cores, random programs against a golden model, the canary comparison and the CPI / prediction study. Still to do: everything on the real board (needs the lab), the SymbiYosys proofs (tool not installed), Spike runs (tool not installed) and all stretch goals. Live numbers: <code>docs/results/README.md</code>. Diagrams: <code>diagrams/top_block_diagram.svg</code> and <code>diagrams/timing_diagram.svg</code>.</div>
+
+<!-- ===================== MAP ===================== -->
+<section id="map-sec">
+  <div class="sec-head" id="map">
+    <div class="eyebrow">Every block, one picture</div>
+    <h2>The system map</h2>
+    <p>Each box is one block you will build and test on its own. Colour shows which module owns it; the border shows its tier. Click any block (or any row in the module lists below) to see what it does, why it exists, how you prove it works and what to read first.</p>
+  </div>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--a-t);border-color:var(--a)"></i>G1 · Core (Avani, Laxmidhar)</span>
+    <span><i class="sw" style="background:var(--b-t);border-color:var(--b)"></i>G2 · RV32M + SoC (Nishant, Nilesh)</span>
+    <span><i class="sw" style="background:var(--c-t);border-color:var(--c)"></i>G3 · ShieldV hardware (Priyank)</span>
+    <span><i class="sw" style="background:var(--s-t);border-color:var(--s)"></i>G3 · Software (Priyank)</span>
+    <span><i class="ln"></i>solid = commitment</span><span><i class="ln" style="border-top-style:dashed"></i>dashed = goal</span><span><i class="ln" style="border-top-style:dotted"></i>dotted = stretch</span>
+  </div>
+  <div class="map-grid">
+    <div class="scroll"><svg id="map-svg" viewBox="0 0 1100 850" role="img" aria-label="ShieldV block diagram"></svg></div>
+    <aside class="detail" id="detail" aria-live="polite"></aside>
+  </div>
+</section>
+
+<!-- ===================== MODULES ===================== -->
+<section id="modules">
+  <div class="sec-head">
+    <div class="eyebrow">Built in parallel, Oct 5 – Nov 1</div>
+    <h2>Three groups, five owners</h2>
+    <p>Each person owns one module end to end: the RTL, its testbenches and its explanation in the viva. They can be built at the same time because nobody waits on anybody: the connections between modules are frozen on day one as interface contracts, and every module is tested against stubs and its own testbench before it ever meets the others.</p>
+  </div>
+  <div class="mods" id="mods"></div>
+
+  <div class="two">
+    <div style="display:grid;gap:10px;min-width:0">
+      <h3>The interface contracts (frozen Oct 4, logged changes Oct 11)</h3>
+      <p class="muted" style="font-size:14.5px">These four port lists are the only things the modules share. Write them into <code>docs/interfaces.md</code> and a header file before any RTL. Changing one needs every owner of that interface to agree, with a line in the decision log.</p>
+<pre>// IF-1  Core &lt;-&gt; M-unit  (owner B implements, A calls)
+input  start, input [2:0] op /*funct3*/, input [31:0] a, b,
+output busy, output done, output [31:0] result
+// rule: core stalls while busy; result valid when done=1 (1 cycle)
+
+// IF-2  Core &lt;-&gt; Data bus  (A drives, B decodes)
+output [31:0] addr, wdata, output [3:0] wstrb, output we, re,
+input  [31:0] rdata            // available the next cycle
+
+// IF-3  Core &lt;-&gt; ShieldV  (G1 exports, G3 consumes)
+// in-order: from EX; out-of-order: from the ROB head at commit
+output ex_valid    // real instruction, committing this cycle
+output [31:0] ex_instr, ex_pc, ex_target, ex_link /*pc+4*/
+input  sh_freeze, sh_trap, input [31:0] sh_handler_pc
+
+// IF-4  Trace port  (A exports, B/C observe)
+output [31:0] if_pc, ex_pc, wb_pc, output stall, flush, ex_valid,
+output retire, branch, mispredict   // branch/mispredict added Oct 11</pre>
+    </div>
+    <div style="display:grid;gap:10px;min-width:0">
+      <h3>Memory map (owned by B, used by C's software)</h3>
+<pre>0x0000_0000  IMEM   16 KB  program (.text)
+0x0001_0000  DMEM   16 KB  data + stack, sp = 0x0001_4000
+0x1000_0000  LED          write 16 bits
+0x1000_0004  SEG7         write 32 bits (8 hex digits)
+0x1000_0008  SWITCH       read 16 bits (synchronised)
+0x1000_0010  UART_TX      write 1 byte
+0x1000_0014  UART_STATUS  bit0 = busy
+0x1000_0020  CYCLE        read, cycles since reset
+0x1000_0024  INSTRET      read, instructions retired
+0x1000_0028  CALLS / _2C RETS
+0x1000_0030  SHIELD_CTRL  bit0 enable, 1 trap, 2 count-only, 3 lpad, 4 LOCK
+0x1000_0034  SHIELD_STAT  violations, depth, cause, [30] locked, [31] alarm
+0x1000_0038  FAULT_PC / _3C EXPECTED / _40 ACTUAL / _44 HANDLER
+0x1000_0050  BRANCHES / _54 MISPRED / _58 VIOL / _5C CORE_ID</pre>
+      <p class="note">Why memory-mapped I/O: C code lights an LED or prints a character with an ordinary store instruction. No new instructions are needed, so the I/O can be built and tested without the CPU.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== LADDER ===================== -->
+<section id="ladder">
+  <div class="sec-head">
+    <div class="eyebrow">Joining the modules, Oct 16 – Nov 6</div>
+    <h2>The integration ladder</h2>
+    <p>Integration happens one rung at a time. Each rung swaps exactly one set of stubs for real blocks and has one gate test. If a rung fails you go back one rung, never more, because everything below it was already proven.</p>
+  </div>
+  <div class="ladder" id="rungs"></div>
+</section>
+
+<!-- ===================== ROADMAP ===================== -->
+<section id="roadmap">
+  <div class="sec-head">
+    <div class="eyebrow">Week by week</div>
+    <h2>The five-week roadmap</h2>
+    <p>Rows are people; the integration row is shared. The course's own deadlines sit on the bottom row so every weekly report has a finished thing to show.</p>
+  </div>
+  <div class="scroll" style="border:0"><div class="gantt" id="gantt"></div></div>
+  <p class="note warn" style="margin-top:14px">Critical path: G1. If the in-order pipeline slips, everything slips; the out-of-order core is joined only after the minimum system works, and the in-order bitstream is always the fallback. The out-of-order core's clock speed is the main open risk.</p>
+</section>
+
+<!-- ===================== CORRECT ===================== -->
+<section id="correct">
+  <div class="sec-head">
+    <div class="eyebrow">Know the answer before the AI writes the code</div>
+    <h2>What correct looks like</h2>
+    <p><b>This picture is a hand-drawn prediction</b>, made before the RTL existed, to practise reading timing. The real one, cut from simulation of the actual Verilog (lock, ignored write, call, MUL stall, return, overflow and trap in 12 cycles), is <code>diagrams/timing_diagram.svg</code>. This is the attack caught cycle by cycle in your 3-stage pipeline. <code>victim()</code> is called from 0x100, its store overflows the saved return address with 0x300 (the <code>hacked()</code> function), and the return is caught in EX at cycle 8. If you can predict a picture like this before simulating, you can catch AI mistakes.</p>
+  </div>
+  <div class="scroll"><svg id="wave" viewBox="0 0 900 440" role="img" aria-label="Timing diagram of a caught return-address attack"></svg></div>
+  <div class="two">
+    <div style="display:grid;gap:8px">
+      <h3>How to read it</h3>
+      <p style="font-size:14.5px">Cycle 2: <code>jal ra</code> reaches EX, is a call, pushes 0x104. The instruction fetched behind it (0x104) is flushed, so cycle 3 has a bubble in EX. Cycle 5: the overflowing store writes 0x300 over the saved return address in data memory, which ShieldV cannot see and does not need to. Cycle 8: <code>ret</code> wants to jump to 0x300 but the shadow copy says 0x104, so <code>mismatch</code> rises, the redirect is blocked and from cycle 9 the pipeline is frozen. With protection off, cycle 9 would fetch 0x300 and the LEDs would read HACKED.</p>
+    </div>
+    <div style="display:grid;gap:8px">
+      <h3>The two graded scenarios (≥25 cycles each)</h3>
+      <p style="font-size:14.5px"><b>Scenario 1, normal execution:</b> nested calls in recursive Fibonacci with shadow-stack pushes and pops, a load-use stall, forwarding, a taken branch flush and a 34-cycle DIV stall.</p>
+      <p style="font-size:14.5px"><b>Scenario 2, attack:</b> the sequence above stretched to 25+ cycles, plus the trap to the handler (goal tier).</p>
+      <p style="font-size:14.5px">The course says timing diagrams must reflect actual execution. So generate both from your simulation VCD (WaveDrom), and capture Scenario 2 on the board with the ILA as proof.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== AI SETUP ===================== -->
+<section id="ai">
+  <div class="sec-head">
+    <div class="eyebrow">Antigravity + Claude Code, set up for hardware</div>
+    <h2>The AI build environment</h2>
+    <p>Five layers, set up once on Oct 4–5 by all five of you so everyone's machine behaves the same. The AI writes most of the code. These layers make sure what it writes is checked by tools and understood by you.</p>
+  </div>
+  <div class="env">
+    <div class="layer"><div class="ln2"><small>Layer 1</small>Machine</div><ul>
+      <li>Laptop + Nexys A7 over USB (programming and UART on the same cable).</li>
+      <li>Windows: Vivado runs natively; install WSL2 Ubuntu for the open-source tools and run Claude Code there. Linux: everything native.</li></ul></div>
+    <div class="layer"><div class="ln2"><small>Layer 2</small>Hardware tools</div><ul>
+      <li><b>Vivado ML Standard</b> (free, supports Artix-7 100T): synthesis, bitstream, ILA on-board debugging, utilization and timing reports.</li>
+      <li><b>Icarus Verilog</b> for fast unit simulation, <b>Verilator</b> <code>--lint-only</code> for catching bugs before simulation, <b>Verible</b> for formatting.</li>
+      <li><b>GTKWave</b> or <b>Surfer</b> to look at waveforms; <b>WaveDrom</b> + <b>vcd2wavedrom</b> to turn a VCD window into a report-quality timing diagram.</li>
+      <li><b>xPack riscv-none-elf-gcc</b> (14.x or newer) to compile C for rv32im; <b>Spike</b> as the official reference simulator; <b>Ripes</b> to watch C run on a visual pipeline while learning.</li>
+      <li><b>draw.io</b> for block diagrams, <b>Yosys + netlistsvg</b> to auto-draw a schematic from your RTL and cross-check the diagram; <b>Python 3 + pyserial</b> for scripts and reading UART.</li></ul></div>
+    <div class="layer"><div class="ln2"><small>Layer 3</small>IDE</div><ul>
+      <li><b>Antigravity</b> opens the repo. Install the Claude Code extension from Open VSX (search "Claude Code"), or run <code>claude</code> in Antigravity's terminal. The official docs list both routes for VS Code forks.</li>
+      <li>From Open VSX also add a Verilog syntax extension and a Draw.io integration so diagrams live in the repo next to the code.</li>
+      <li>Split of AIs: Claude Code is the only writer of RTL, testbenches and scripts. Antigravity's built-in agent is the second opinion: reviewing a diff, researching a spec question, drafting a diagram. Two agents never edit the same folder at once.</li></ul></div>
+    <div class="layer"><div class="ln2"><small>Layer 4</small>Project brain</div><ul>
+      <li><code>CLAUDE.md</code>: project goal, ownership, Verilog rules, commands. Claude reads it every session.</li>
+      <li><code>.claude/agents/</code>: <b>rtl-reviewer</b>, <b>tb-writer</b>, <b>viva-coach</b> subagents (below).</li>
+      <li><code>.claude/skills/</code>: <b>timing-diagram</b>, <b>new-block</b>, <b>fpga-build</b>, each a repeatable recipe.</li>
+      <li><code>.claude/settings.json</code>: a hook that lints the RTL after every AI edit and sends errors back to Claude.</li></ul></div>
+    <div class="layer"><div class="ln2"><small>Layer 5</small>Safety net</div><ul>
+      <li>Private GitHub repo; one branch per block; the module owner reviews every merge into their folder.</li>
+      <li>GitHub Actions runs <code>make lint test</code> on every push, so a broken block can never sit silently in main. The run history doubles as progress evidence.</li>
+      <li>MCP servers are optional here. Nothing in this project needs one; hooks, subagents and CI matter far more.</li></ul></div>
+  </div>
+
+  <h3 style="margin-top:26px">Repository layout</h3>
+<pre style="margin-top:10px">hardware_lab_shieldv/          (the real layout, Oct 11)
+├─ G1/ Avani/ Laxmidhar/   rtl/ tb/ golden/   core, predictor, out-of-order engine
+├─ G2/ Nishant/ Nilesh/    rtl/ tb/ golden/   M-unit; SoC (Nilesh also fpga/)
+├─ G3/ Priynk/             rtl/ tb/ golden/ sw/   ShieldV + all C software
+├─ diagrams/               top_block_diagram.svg/.png · timing_diagram.svg/.png
+├─ docs/                   interfaces.md · PROVENANCE.md · results/ · how-to-commit.md
+├─ scripts/                run_tests · run_prog · riscv_tests · random_diff · rv32im_iss · measure · canary · diagrams · fpga
+└─ .github/workflows/sim.yml</pre>
+
+  <div class="two">
+    <div style="display:grid;gap:8px;min-width:0"><h3>CLAUDE.md starter</h3>
+<pre># ShieldV: RV32IM core with a hardware shadow stack
+3-stage pipeline (IF/ID, EX, MEM/WB) on Nexys A7-100T.
+ShieldV checks every return against a hardware shadow stack.
+Read docs/interfaces.md before touching any port.
+Interfaces are frozen; changes need all 3 owners (log in docs/decisions/).
+
+## Ownership (one writer per folder)
+rtl/core, rtl/mem          -&gt; Member A
+rtl/munit, rtl/soc, fpga   -&gt; Member B
+rtl/shield, sw             -&gt; Member C
+
+## Verilog rules
+- Verilog-2001, one module per file, file name = module name
+- Sequential: always @(posedge clk) with &lt;= ; combinational: always @* with =
+- Every register has a synchronous active-low reset (rst_n)
+- No latches: assign every combinational output a default first
+- Explicit widths on constants (32'd4, not 4)
+
+## Commands
+make lint | make test | make sim PROG=fib
+make diagrams | make fpga
+
+## We are learning
+- Before writing a block, ask for the golden I/O table in docs/golden/.
+- After a block, add 5 plain-language lines to docs/learning-log.md.
+- Never call something done unless make test passes.
+- Never edit a test just to make it pass.</pre></div>
+    <div style="display:grid;gap:8px;min-width:0"><h3>Lint hook · .claude/settings.json</h3>
+<pre>{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "make -s lint 2&gt;lint.log &gt;/dev/null || { cat lint.log &gt;&amp;2; exit 2; }"
+          }
+        ]
+      }
+    ]
+  }
+}</pre>
+      <p class="muted" style="font-size:13.5px">After every file edit, Claude Code runs the linter. For PostToolUse, exit code 2 shows the error text to Claude, so it fixes latches and width mismatches immediately.</p>
+      <h3 style="margin-top:8px">Subagent · .claude/agents/viva-coach.md</h3>
+<pre>---
+name: viva-coach
+description: Quizzes a team member on a block they built,
+  one question at a time. Use when asked "quiz me on &lt;block&gt;".
+tools: Read, Grep, Glob
+---
+Read the block's RTL, testbench and docs/learning-log.md.
+Ask 5 questions an examiner would ask, easy to hard.
+Wait for each answer. Correct it in plain language,
+pointing to the exact line of RTL. End with the one
+concept the student should revise.</pre></div>
+  </div>
+  <div class="two">
+    <div style="display:grid;gap:8px;min-width:0"><h3>Subagent · rtl-reviewer.md</h3>
+<pre>---
+name: rtl-reviewer
+description: Reviews Verilog changes for latches, blocking vs
+  non-blocking misuse, missing resets, width mismatches and
+  violations of docs/interfaces.md. Use after any RTL edit.
+tools: Read, Grep, Glob, Bash
+---
+Report findings as a numbered list: file:line, the problem,
+one plain-language sentence on why it breaks on FPGA.
+Do not edit files.</pre></div>
+    <div style="display:grid;gap:8px;min-width:0"><h3>Skill · .claude/skills/timing-diagram/SKILL.md</h3>
+<pre>---
+name: timing-diagram
+description: Turn a window of a simulation VCD into a
+  WaveDrom timing diagram for reports.
+---
+1. make sim PROG=&lt;prog&gt;  -&gt; build/&lt;prog&gt;.vcd
+2. Pick a window of at least 25 cycles around the event.
+3. scripts/vcd2wave.py with the signal list in scripts/diagrams.py
+4. Write diagrams/timing_diagram.svg (and a .png copy)
+5. Write a caption naming every stall, flush, push, pop.</pre></div>
+  </div>
+
+  <h3 style="margin-top:26px">Tool → job → marks</h3>
+  <div class="tblwrap" style="margin-top:10px"><table class="tbl">
+    <thead><tr><th>Tool</th><th>Job in ShieldV</th><th>Marks it supports</th></tr></thead>
+    <tbody>
+      <tr><td>Vivado + ILA</td><td>Bitstream, resource and timing numbers, watching real signals on the board</td><td>FPGA demo 2.5 · Design 1.0</td></tr>
+      <tr><td>Icarus + Verilator</td><td>Run every unit testbench in seconds; lint catches latches and width bugs early</td><td>Validation 1.0</td></tr>
+      <tr><td>Spike + riscv-tests</td><td>Independent "right answer" for every instruction and program</td><td>Validation 1.0</td></tr>
+      <tr><td>WaveDrom + vcd2wavedrom</td><td>Timing diagrams cut from real simulation</td><td>Timing diagram 1.5</td></tr>
+      <tr><td>draw.io + netlistsvg</td><td>Clean block diagrams, checked against what the RTL actually contains</td><td>Block diagram 1.0</td></tr>
+      <tr><td>Git + GitHub Actions</td><td>Small commits per block per person; CI history shows steady progress</td><td>Git 1.0 · Progress 1.0</td></tr>
+      <tr><td>Ripes + Compiler Explorer</td><td>See how your C becomes RISC-V and flows through a pipeline</td><td>Viva and understanding</td></tr>
+    </tbody></table></div>
+</section>
+
+<!-- ===================== LEARN ===================== -->
+<section id="learn">
+  <div class="sec-head">
+    <div class="eyebrow">Understand it while the AI builds it</div>
+    <h2>The learning loop, study library and viva bank</h2>
+    <p>Run this loop for every block. Step 2 is the important one: you write down what the block should do before the AI writes it. When the simulation disagrees with your prediction, either the AI or your understanding is wrong, and finding out which is exactly the learning.</p>
+  </div>
+  <div class="loop">
+    <div class="step"><b>Learn</b><p>20 minutes on the block's study link from the map.</p></div>
+    <div class="step"><b>Predict</b><p>Write the golden input/output table and sketch the expected waveform by hand in docs/golden/.</p></div>
+    <div class="step"><b>Generate</b><p>Claude Code in plan mode: approve the plan and test cases first, then the RTL and testbench.</p></div>
+    <div class="step"><b>Prove</b><p>Lint hook, make test, compare against your prediction. Investigate every difference.</p></div>
+    <div class="step"><b>Explain</b><p>viva-coach asks 5 questions; add 5 lines to the learning log.</p></div>
+    <div class="step"><b>Commit</b><p>Separate commits for test, RTL, fix and docs. That adds up to 20+ per person without trying.</p></div>
+  </div>
+<pre style="margin-top:14px">Example prompt (plan mode):
+Build block C2, the shadow stack RAM. Contract: docs/interfaces.md IF-3.
+Golden I/O: docs/golden/C2.md. Show me the plan and the testbench cases first;
+do not write RTL until I approve. Use LUTRAM with asynchronous read.
+Explain every design choice in one plain sentence.</pre>
+
+  <h3 style="margin-top:26px">Study library</h3>
+  <div class="lib" id="lib" style="margin-top:10px"></div>
+
+  <h3 style="margin-top:26px">Viva question bank</h3>
+  <p class="muted" style="font-size:14.5px;margin:6px 0 12px">Every member should be able to answer all of these, not just the ones about their own module.</p>
+  <div id="viva"></div>
+</section>
+
+<!-- ===================== MARKS ===================== -->
+<section id="marks">
+  <div class="sec-head">
+    <div class="eyebrow">Built against the grading sheet</div>
+    <h2>Marks map and risks</h2>
+    <p>Every component of the 10-mark scheme has a planned piece of evidence. Reminder from the guidelines: no marks at all without a block diagram and an FPGA demo, and each student must implement at least one hardware module and explain their own code.</p>
+  </div>
+  <div class="tblwrap"><table class="tbl">
+    <thead><tr><th>Component</th><th>Marks</th><th>Evidence ShieldV produces</th><th>Ready by</th></tr></thead>
+    <tbody>
+      <tr><td>Block diagram</td><td class="num">1.0</td><td><code>diagrams/top_block_diagram.svg</code>: the whole system with every sub-block, signal names and widths checked against the Verilog</td><td class="num">Oct 11</td></tr>
+      <tr><td>Timing diagram</td><td class="num">1.5</td><td>One 12-cycle timing diagram of the whole project cut from a real simulation VCD (lock, ignored write, call, MUL stall, return, overflow, trap); ILA capture on the board still to do</td><td class="num">Oct 11 sim · Nov 1 board</td></tr>
+      <tr><td>Design</td><td class="num">1.0</td><td>Interface contracts, decision log, FSM diagrams for the divider, UART and violation FSM</td><td class="num">Oct 11</td></tr>
+      <tr><td>Validation</td><td class="num">1.0</td><td>37 unit testbenches, riscv-tests on both cores, random programs vs a golden model on both cores, workloads, attack / lock / canary matrix, shield replay, CI history; formal proofs planned</td><td class="num">Nov 1</td></tr>
+      <tr><td>Demo video</td><td class="num">1.0</td><td>4 minutes: 30 s problem, 60 s architecture, 100 s live switch-off/switch-on demo, 50 s results</td><td class="num">Nov 5</td></tr>
+      <tr><td>FPGA demo</td><td class="num">2.5</td><td>Demo runbook, rehearsed twice; backup bitstreams for rungs I3 and I4</td><td class="num">Nov 7–8</td></tr>
+      <tr><td>Regular progress</td><td class="num">1.0</td><td>Weekly reports, each pointing at one finished rung or block</td><td class="num">weekly</td></tr>
+      <tr><td>Git commits</td><td class="num">1.0</td><td>Commit plans: Avani 32, Laxmidhar 33, Nishant 24, Nilesh 35, Priyank 41 commits (all ≥ 20), each from the member's own account</td><td class="num">continuous</td></tr>
+    </tbody></table></div>
+
+  <h3 style="margin-top:26px">Risk register</h3>
+  <div class="tblwrap" style="margin-top:10px"><table class="tbl">
+    <thead><tr><th>Risk</th><th>What it would cost</th><th>Built-in answer</th><th>Owner</th></tr></thead>
+    <tbody>
+      <tr><td>Pipeline slips</td><td>Everything downstream waits</td><td>Single-cycle core first; stubs let B and C keep moving</td><td>A</td></tr>
+      <tr><td>Works in sim, fails on board</td><td>The 2.5-mark demo</td><td>Reset every register, synchronise switches, prove I/O on the board in week 2 before the CPU, ILA probes ready</td><td>B</td></tr>
+      <tr><td>Timing fails at 100 MHz</td><td>Random wrong results</td><td>Run at 50 MHz from a clock wizard; divider is multi-cycle anyway</td><td>B</td></tr>
+      <tr><td>Attack doesn't reproduce</td><td>No "before" picture in the demo</td><td>Prove it in week 1 on Ripes/Spike; compile with <code>-O0</code>, mark functions <code>noinline</code>, read the objdump for the exact stack offset</td><td>C</td></tr>
+      <tr><td>False alarms on normal code</td><td>Workloads freeze</td><td>No <code>setjmp/longjmp</code> in workloads; handle the coroutine swap case; "count only" mode for diagnosis; document the limitation</td><td>C</td></tr>
+      <tr><td>Recursion deeper than 32</td><td>Overflow alarm</td><td>Overflow flag + bounded workload depth; spill is a stretch goal</td><td>C</td></tr>
+      <tr><td>AI code nobody understands</td><td>Viva marks; each student must explain their code</td><td>The learning loop, golden I/O written by a human, viva-coach before every report</td><td>All</td></tr>
+      <tr><td>Merge conflicts, uneven commits</td><td>Git marks, lost work</td><td>One writer per folder, one branch per block, CI on every push</td><td>All</td></tr>
+      <tr><td>Out-of-order core misses timing</td><td>No out-of-order bitstream</td><td>It is a build option: the in-order bitstream is the fallback; report the measured clock honestly</td><td>Laxmidhar, Nilesh</td></tr>
+      <tr><td>Out-of-order core slower than in-order</td><td>Misses the ≥1.0× goal</td><td>Measured per workload by measure.py; ideas in the report: fix mispredictions at execute, store-to-load forwarding</td><td>Laxmidhar, Avani</td></tr>
+      <tr><td>Formal tools not installed</td><td>No proofs</td><td>Install SymbiYosys (OSS CAD Suite) early; directed tests already cover the same three properties</td><td>Priyank</td></tr>
+    </tbody></table></div>
+</section>
+
+<!-- ===================== FRAMEWORK ===================== -->
+<section id="framework">
+  <div class="sec-head">
+    <div class="eyebrow">The whole method on one screen</div>
+    <h2>The ShieldV framework</h2>
+    <p>Five rules that hold for every block, every rung and every person, plus the definition of done every block must meet before anyone builds on it.</p>
+  </div>
+  <div class="fw">
+    <div class="rule"><b>Contract first</b><p>Ports and memory map frozen before any logic. This is what makes parallel work possible.</p></div>
+    <div class="rule"><b>Predict before generate</b><p>A human writes the expected answer; the AI writes the code; the testbench decides who is right.</p></div>
+    <div class="rule"><b>Stub to start early</b><p>Every module runs against fake neighbours from day one, so nobody waits.</p></div>
+    <div class="rule"><b>One rung at a time</b><p>Join one set of real blocks per step, each with a single gate test; every rung after I1 ends on the board.</p></div>
+    <div class="rule"><b>Explain to own</b><p>If you can't explain a block to viva-coach, it isn't done, however green the tests are.</p></div>
+  </div>
+  <div class="dod">
+    <div><span>Done check 1</span>Golden I/O table written by the owner in docs/golden/</div>
+    <div><span>Done check 2</span>Unit testbench passes in Icarus; Verilator lint clean</div>
+    <div><span>Done check 3</span>Synthesises in Vivado with no latches or critical warnings</div>
+    <div><span>Done check 4</span>Diagram and learning-log entry updated</div>
+    <div><span>Done check 5</span>Owner answers viva-coach's 5 questions without help</div>
+  </div>
+  <p class="note" style="margin-top:14px">The order of everything: Oct 4 freeze contracts → Oct 5–25 blocks in parallel (M1, M2, M4) → Oct 16–Nov 1 climb rungs I1 to I4 (M3 Oct 22) → Nov 1 minimum system with lock and trap on the board, out-of-order core passing riscv-tests in simulation (M5) → Nov 2–6 out-of-order on the board, evaluation, proofs (M6) → Nov 5 report and video → Nov 7–8 demo.</p>
+</section>
+
+<section id="sources">
+  <div class="sec-head"><div class="eyebrow">References used to build this plan</div><h2>Sources</h2></div>
+  <div class="sources" id="srcs"></div>
+</section>
+</div>
+
+<script>
+(function(){
+const L = {
+ HH:["Harris & Harris, DDCA RISC-V Edition","https://pages.hmc.edu/harris/ddca/ddcarv.html"],
+ HHV:["Harris & Harris video lectures","https://pages.hmc.edu/harris/ddca/ddcarv/ddcarv_videos.html"],
+ RVM:["RISC-V ISA manual","https://github.com/riscv/riscv-isa-manual"],
+ CFI:["RISC-V CFI spec (ratified)","https://docs.riscv.org/reference/isa/v20260120/unpriv/unpriv-cfi.html"],
+ CFIB:["riscv-cfi backward-edge source","https://github.com/riscv/riscv-cfi/blob/main/src/cfi_backward.adoc"],
+ CVA6:["CVA6-CFI paper (2026)","https://arxiv.org/abs/2602.04991"],
+ SOK:["SoK: Shining Light on Shadow Stacks","https://arxiv.org/abs/1811.03165"],
+ ABADI:["Abadi et al., Control-Flow Integrity","https://users.soe.ucsc.edu/~abadi/Papers/cfi-tissec-revised.pdf"],
+ PHRACK:["Smashing the Stack for Fun and Profit","http://phrack.org/issues/49/14.html"],
+ ROP:["Shacham, Geometry of Innocent Flesh (ROP)","https://hovav.net/ucsd/dist/geometry.pdf"],
+ CSUR:["Burow et al., CFI: Precision, Security, Performance","https://nebelwelt.net/files/17CSUR.pdf"],
+ LWN:["LWN: RISC-V CFI for user mode","https://lwn.net/Articles/959465/"],
+ GCC:["GCC patch: -fcf-protection for RISC-V","https://www.mail-archive.com/gcc-patches@gcc.gnu.org/msg361831.html"],
+ NEXYS:["Nexys A7 reference manual","https://digilent.com/reference/programmable-logic/nexys-a7/reference-manual"],
+ NAND:["nandland: UART module","https://nandland.com/uart-serial-port-module/"],
+ ZIP:["ZipCPU blog","https://zipcpu.com"],
+ ILA:["AMD UG908: Vivado programming & debugging (ILA)","https://docs.amd.com/r/en-US/ug908-vivado-programming-debugging"],
+ RIPES:["Ripes visual RISC-V simulator","https://github.com/mortbopet/Ripes"],
+ GB:["Compiler Explorer","https://godbolt.org"],
+ SPIKE:["Spike RISC-V ISA simulator","https://github.com/riscv-software-src/riscv-isa-sim"],
+ RVT:["riscv-tests","https://github.com/riscv-software-src/riscv-tests"],
+ XPACK:["xPack riscv-none-elf-gcc","https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases"],
+ DDCA:["Onur Mutlu, DDCA Spring 2025 (ETH)","https://safari.ethz.ch/ddca/spring2025/"],
+ WD:["WaveDrom","https://wavedrom.com"],
+ V2W:["vcd2wavedrom","https://github.com/Toroid-io/vcd2wavedrom"],
+ VER:["Verilator","https://www.veripool.org/verilator/"],
+ IV:["Icarus Verilog","https://steveicarus.github.io/iverilog/"],
+ VERIBLE:["Verible","https://github.com/chipsalliance/verible"],
+ SURF:["Surfer waveform viewer","https://surfer-project.org"],
+ NSVG:["netlistsvg","https://github.com/nturley/netlistsvg"],
+ DRAW:["draw.io","https://www.drawio.com"],
+ CCMEM:["Claude Code: CLAUDE.md memory","https://code.claude.com/docs/en/memory"],
+ CCSUB:["Claude Code: subagents","https://code.claude.com/docs/en/sub-agents"],
+ CCHOOK:["Claude Code: hooks guide","https://code.claude.com/docs/en/hooks-guide"],
+ CCSKILL:["Claude Code: skills","https://code.claude.com/docs/en/skills"],
+ CCVS:["Claude Code in VS Code and forks","https://code.claude.com/docs/en/vs-code"],
+ CCBP:["Claude Code: best practices","https://code.claude.com/docs/en/best-practices"],
+ OVSX:["Claude Code on Open VSX","https://open-vsx.org/extension/Anthropic/claude-code"],
+ AG:["Antigravity: VS Code extensions","https://antigravity.google/docs/ide/extensions/vscode/"],
+ COURSE:["Course base repo (3-Stage-Pipeline)","https://github.com/Ritu235/3-Stage-Pipeline"]
+};
+
+// blocks: id, m(module), t(tier c/g/s), name, x,y,w,h, what, why, test, study keys, joins
+const B = [
+ // ---- Module A: core
+ {id:"A1",m:"A",t:"c",n:"PC + next-PC",x:45,y:90,w:100,h:44,
+  what:"Register holding the address of the next instruction. A mux picks PC+4, a branch/jump target or the trap handler address, and a hold input keeps PC still.",
+  why:"Every instruction starts here. ShieldV stops an attack by refusing the redirect to the attacker's address, so the hold input must exist from day one.",
+  test:"Testbench drives each select and the hold; checks the reset value 0x0000_0000.",s:["HH","HHV"],j:"I1"},
+ {id:"A2",m:"A",t:"c",n:"Instruction RAM",x:155,y:90,w:120,h:44,
+  what:"16 KB block RAM loaded from program.hex with $readmemh; synchronous read.",
+  why:"Holds the compiled C program. Block RAM behaves the same in simulation and on the FPGA and keeps logic free for the CPU.",
+  test:"Load a known hex file, read back several addresses, check the one-cycle read latency.",s:["HH","NEXYS"],j:"I1"},
+ {id:"A3",m:"A",t:"c",n:"Decoder / ctrl",x:45,y:150,w:115,h:44,
+  what:"Splits the 32-bit instruction into opcode, rd, rs1, rs2, funct3/funct7 and produces every control signal (ALU op, register write, memory write, is-branch, is-jal, is-jalr, is-M-op).",
+  why:"The one place where an instruction's meaning is decided. A bug here makes an instruction silently act as another, which is common bug #4 in the course guidelines.",
+  test:"Table-driven testbench over one encoding of every RV32IM instruction against the expected control word.",s:["RVM","GB"],j:"I1"},
+ {id:"A4",m:"A",t:"c",n:"Immediate gen",x:170,y:150,w:105,h:44,
+  what:"Rebuilds the sign-extended constant for the I, S, B, U and J instruction formats.",
+  why:"RISC-V scrambles the bits of B and J immediates to simplify hardware. Most beginner CPU bugs live in this shuffling.",
+  test:"Assemble known instructions, compare against the immediates objdump prints.",s:["RVM","HH"],j:"I1"},
+ {id:"A5",m:"A",t:"c",n:"Register file",x:45,y:210,w:230,h:44,
+  what:"32 registers × 32 bits, two read ports, one write port; x0 always reads 0.",
+  why:"Supplies the operands of every instruction. Return addresses pass through x1 (ra), which is what the attack corrupts.",
+  test:"Write and read every register; a write to x0 is ignored; read and write of the same register in one cycle.",s:["HH"],j:"I1"},
+ {id:"A6",m:"A",t:"c",n:"ALU",x:305,y:90,w:100,h:44,
+  what:"Add, subtract, AND, OR, XOR, shifts (sll/srl/sra), set-less-than (signed and unsigned).",
+  why:"Does the arithmetic of RV32I and computes every load/store address, including the overflowing store in the attack.",
+  test:"Random values plus edges (0, −1, INT_MIN, shift by 31) against a Python model.",s:["HH","HHV"],j:"I1"},
+ {id:"A7",m:"A",t:"c",n:"Branch & jump",x:415,y:90,w:100,h:44,
+  what:"Compares rs1/rs2 for beq…bgeu, computes targets (pc+imm, and (rs1+imm) with bit 0 cleared for jalr) and the link value pc+4.",
+  why:"The jalr target computed here is exactly the value ShieldV checks, and the link value is what it pushes.",
+  test:"Each branch type with signed/unsigned edge values; jalr bit-0 clearing.",s:["RVM","HH"],j:"I1"},
+ {id:"A8",m:"A",t:"c",n:"Pipeline regs",x:283,y:84,w:16,h:220,vert:true,
+  what:"Registers between IF/ID and EX and between EX and MEM/WB, carrying instruction, PC, operands, control and a valid bit.",
+  why:"They let three instructions be in flight. The valid bit tells ShieldV which instructions are real and which are bubbles.",
+  test:"A stall holds the contents; a flush clears the valid bit (bubble).",s:["HH","DDCA"],j:"I1"},
+ {id:"A9",m:"A",t:"c",n:"Forwarding unit",x:305,y:150,w:210,h:44,
+  what:"Routes a result that was just computed straight to the next instruction instead of the stale register value.",
+  why:"Without it, back-to-back dependent instructions read old values (data hazard). The return instruction depends on the ra loaded just before it.",
+  test:"Directed sequences: add→add, load→add, load→jalr.",s:["HH","DDCA"],j:"I1"},
+ {id:"A10",m:"A",t:"c",n:"Hazard & stall unit",x:45,y:318,w:330,h:40,
+  what:"One central place that freezes earlier stages for a load-use hazard, a busy M-unit or a ShieldV freeze.",
+  why:"A single stall source avoids conflicting stalls. Missing or wrong stalls are common bugs #5 and #6 in the guidelines.",
+  test:"DIV followed by a dependent instruction; freeze held indefinitely; load-use sequence.",s:["HH","ZIP"],j:"I1"},
+ {id:"A11",m:"A",t:"c",n:"Flush logic",x:385,y:318,w:330,h:40,
+  what:"Kills wrongly fetched instructions after taken branches, jumps and traps by clearing their valid bits.",
+  why:"In this 3-stage pipeline, a taken branch in EX means the instruction behind it is wrong. ShieldV must never count a push or pop from a flushed instruction.",
+  test:"After a taken branch, the next sequential instruction never writes back.",s:["HH","DDCA"],j:"I1"},
+ {id:"A12",m:"A",t:"c",n:"Load/store unit",x:550,y:90,w:165,h:44,
+  what:"Forms byte enables for sb/sh/sw; aligns and sign-extends lb/lh/lbu/lhu.",
+  why:"The attack is literally a store that overwrites the stack, so byte handling must be exact.",
+  test:"Every width at every byte offset, signed and unsigned loads.",s:["RVM","HH"],j:"I1"},
+ {id:"A13",m:"A",t:"c",n:"Writeback mux",x:550,y:150,w:165,h:44,
+  what:"Chooses what goes into rd: ALU result, load data, pc+4 (link) or M-unit result.",
+  why:"Wrong destination or a missing write-enable is common bug #7. The link value written here is what the program later returns to.",
+  test:"Each source selected in turn; x0 never written.",s:["HH"],j:"I1"},
+ {id:"A14",m:"A",t:"c",n:"Trace port",x:550,y:210,w:165,h:44,
+  what:"Exports each stage's PC plus stall, flush and valid every cycle (IF-4).",
+  why:"Feeds the timing diagrams and the ILA. It costs almost nothing if planned from the start and a lot to add later.",
+  test:"Compared against expected stage contents in the system testbench.",s:["ILA","WD"],j:"I1"},
+ {id:"A15",m:"A",t:"c",n:"Data memory",x:765,y:150,w:145,h:44,
+  what:"16 KB block RAM with byte-write enables. The stack lives at its top (sp = 0x0001_4000).",
+  why:"Holds the normal stack where return addresses are saved, which is the attack surface ShieldV protects.",
+  test:"Byte-write patterns; read-after-write.",s:["HH","NEXYS"],j:"I1"},
+ // ---- Module B
+ {id:"B1",m:"B",t:"c",n:"Multiplier",x:305,y:210,w:100,h:44,
+  what:"MUL, MULH, MULHSU, MULHU using a 33×33 signed multiply that maps to the FPGA's DSP blocks; 1–2 cycle latency.",
+  why:"A course minimum requirement. Signed/unsigned handling of the upper half is the first common bug in the guidelines.",
+  test:"10,000 random pairs plus edges (−2³¹×−2³¹, −1×1, 0) against a Python 64-bit reference.",s:["RVM","HH"],j:"I3"},
+ {id:"B2",m:"B",t:"c",n:"Divider",x:415,y:210,w:100,h:44,
+  what:"DIV, DIVU, REM, REMU with a 32-step restoring division state machine.",
+  why:"Required, and it teaches multi-cycle operations. The spec fixes the edge cases: x/0 gives quotient −1 and remainder x; INT_MIN/−1 gives quotient INT_MIN and remainder 0.",
+  test:"Random values plus every spec edge case; checks the busy/done timing.",s:["RVM","HH"],j:"I3"},
+ {id:"B3",m:"B",t:"c",n:"M-unit handshake",x:305,y:264,w:210,h:30,
+  what:"A start/busy/done wrapper (IF-1) that makes MUL and DIV look the same to the core.",
+  why:"Because the core only sees this contract, A can integrate against a stub long before B finishes. This is what makes the modules independent.",
+  test:"Start pulses, back-to-back ops, stall released exactly on done.",s:["ZIP"],j:"I3"},
+ {id:"B4",m:"B",t:"c",n:"Bus & address decoder",x:765,y:90,w:300,h:44,
+  what:"Routes each load or store to data memory or a peripheral by address range (the memory map).",
+  why:"Memory-mapped I/O lets C code light LEDs or print with an ordinary store, with no new instructions.",
+  test:"Each address range selects exactly one target; unmapped reads return 0.",s:["HH","NEXYS"],j:"I2"},
+ {id:"B5",m:"B",t:"c",n:"LED register",x:765,y:210,w:145,h:44,
+  what:"A 16-bit write-only register wired to the board LEDs.",
+  why:"The simplest proof of life, and the HACKED / alarm patterns in the demo.",
+  test:"Store to 0x1000_0000, check the LED pins in simulation, then on the board.",s:["NEXYS"],j:"I2"},
+ {id:"B6",m:"B",t:"c",n:"Switch sync",x:765,y:270,w:145,h:44,
+  what:"Two-flip-flop synchroniser (plus debounce for buttons) for the 16 switches.",
+  why:"Switches change at random times relative to the clock. Unsynchronised inputs cause rare, FPGA-only bugs (metastability). The protection on/off switch passes through here.",
+  test:"Toggle in simulation at random times; on the board, read switches back on the LEDs.",s:["NEXYS","ZIP"],j:"I2"},
+ {id:"B7",m:"B",t:"c",n:"7-segment driver",x:920,y:210,w:145,h:44,
+  what:"Drives 8 hex digits by lighting one digit at a time, about 1 kHz per digit.",
+  why:"Shows results, cycle counts and the fault PC without a laptop, which makes the demo readable from across the room.",
+  test:"Write 0x1234ABCD, check the digit-select and segment patterns.",s:["NEXYS"],j:"I2"},
+ {id:"B8",m:"B",t:"c",n:"UART transmitter",x:920,y:270,w:145,h:44,
+  what:"115200 baud, 8 data bits, no parity, 1 stop bit, with a busy status bit.",
+  why:"Prints workload results and the 'attack blocked at PC …' report on your laptop.",
+  test:"Testbench decodes the serial line back into bytes; on the board, a terminal shows text.",s:["NAND","NEXYS"],j:"I2"},
+ {id:"B9",m:"B",t:"g",n:"Perf counters",x:920,y:150,w:145,h:44,
+  what:"Counters for cycles, retired instructions, calls, returns and violations, readable over the bus.",
+  why:"They produce the measurable numbers for the report: CPI and protection overhead.",
+  test:"Count a known program and compare against Spike's instruction count.",s:["HH"],j:"I2"},
+ {id:"B10",m:"B",t:"c",n:"Clock & reset",x:920,y:330,w:145,h:44,
+  what:"100 MHz board clock, optional clock wizard down to 50 MHz, and a reset synchroniser for the button.",
+  why:"Missing resets and timing problems are common bug #8. A slower clock is the safe fallback if timing fails.",
+  test:"Vivado timing report shows non-negative slack; reset release is synchronous.",s:["NEXYS","ILA"],j:"I2"},
+ {id:"B11",m:"B",t:"c",n:"FPGA top + pin constraints",x:765,y:390,w:300,h:44,
+  what:"Top module wiring core and SoC to the board pins, the XDC constraints file and a one-command Vivado build script.",
+  why:"Reproducible builds by script avoid GUI mistakes, and produce the utilization and timing reports the course asks for.",
+  test:"make fpga produces a bitstream and reports with no critical warnings.",s:["NEXYS","ILA"],j:"I2"},
+ // ---- Module C hardware
+ {id:"C1",m:"C",t:"c",n:"Call/return detector",x:45,y:445,w:160,h:44,
+  what:"Classifies the instruction in EX. Call: jal/jalr with rd = x1 or x5. Return: jalr with rd = x0 and rs1 = x1 or x5. Indirect jump: jalr with rd = x0 and any other rs1. These are the same definitions the ratified spec uses.",
+  why:"This lets protection work on ordinary compiled C with no compiler changes.",
+  test:"Table of encodings, including tricky ones such as jalr x1, 0(x5) (pop then push).",s:["CFI","CFIB"],j:"I4"},
+ {id:"C2",m:"C",t:"c",n:"Shadow stack RAM",x:215,y:445,w:160,h:44,
+  what:"32 entries × 32 bits of small RAM built from FPGA logic (LUTRAM), separate from data memory, with no load/store path to it.",
+  why:"The attacker's store can reach the normal stack but physically cannot reach this memory. That is the entire security argument. LUTRAM reads in the same cycle; block RAM would add a cycle.",
+  test:"Push/pop sequences; nothing on the data bus ever changes it.",s:["SOK","CFI"],j:"I4"},
+ {id:"C3",m:"C",t:"c",n:"Pointer + full/empty",x:385,y:445,w:160,h:44,
+  what:"A 6-bit counter (the shadow stack pointer) with full and empty flags.",
+  why:"Detects overflow (recursion deeper than 32) and underflow (a return with nothing pushed, which some attacks cause).",
+  test:"32 nested calls fill it; the 33rd raises overflow; a return on empty raises underflow.",s:["SOK"],j:"I4"},
+ {id:"C4",m:"C",t:"c",n:"Commit control",x:555,y:445,w:160,h:44,
+  what:"Allows a push or pop only when ex_valid is high and there is no stall or flush.",
+  why:"A call fetched down a wrong path must never touch the shadow stack. This is where your pipeline knowledge meets security, and examiners will ask about it.",
+  test:"Flushed call → no push; a return stalled for 3 cycles → exactly one pop.",s:["HH","CVA6"],j:"I4"},
+ {id:"C5",m:"C",t:"c",n:"Return comparator",x:45,y:500,w:160,h:44,
+  what:"32-bit equality check between the return's actual jalr target and the value on top of the shadow stack.",
+  why:"This is the detection itself. It is combinational, so it adds zero cycles.",
+  test:"Equal and unequal targets, single-bit differences, bit 0 cleared.",s:["SOK","ABADI"],j:"I4"},
+ {id:"C6",m:"C",t:"c",n:"Violation FSM",x:215,y:500,w:160,h:44,
+  what:"States NORMAL → ALARM. On a mismatch it blocks the PC redirect, raises freeze (commitment) or a trap to the handler (goal), and latches fault PC, expected and actual addresses.",
+  why:"Guarantees that zero attacker-chosen instructions ever execute, which is your headline result.",
+  test:"In the attack simulation, the PC never equals the attacker address; latched values match.",s:["CFI","HH"],j:"I4"},
+ {id:"C7",m:"C",t:"c",n:"Enable / mode reg",x:555,y:500,w:160,h:44,
+  what:"Protection off / on / count-only, set from a switch or the SHIELD_CTRL register.",
+  why:"Enables the live A/B demo (same program, flip the switch) and the baseline measurements with protection off.",
+  test:"Each mode with the attack program: hijack, freeze, count-only.",s:["NEXYS"],j:"I4"},
+ {id:"C8",m:"C",t:"g",n:"Landing-pad check",x:385,y:500,w:160,h:44,
+  what:"After an indirect jump, the next executed instruction must be an LPAD marker (auipc with rd = x0, as in Zicfilp) or it is a violation.",
+  why:"Shadow stacks only protect returns (backward edges). Landing pads protect function-pointer jumps (forward edges), so together they cover both.",
+  test:"An indirect jump to a non-LPAD instruction faults; to an LPAD it passes.",s:["CFI","ABADI"],j:"I5"},
+ {id:"C9",m:"C",t:"c",n:"Fault registers",x:765,y:330,w:145,h:44,
+  what:"Memory-mapped FAULT_PC, EXPECTED, ACTUAL, cause and counts, plus a direct path to the 7-segment display while frozen.",
+  why:"Lets the display and the handler software explain the attack during the demo.",
+  test:"After an injected mismatch, each register reads back the right value.",s:["CFI"],j:"I4"},
+ {id:"C10",m:"C",t:"s",n:"Zicfiss instructions",x:45,y:555,w:250,h:36,
+  what:"Decode the real sspush / sspopchk / ssrdp instructions, encoded in the spec's may-be-operation space.",
+  why:"Moves from 'inspired by' to 'implements' the ratified instructions; only worth it once everything else is done.",
+  test:"Hand-assembled sspush/sspopchk sequences; mismatch → fault.",s:["CFI","CFIB","GCC"],j:"stretch"},
+ {id:"C11",m:"C",t:"s",n:"Shadow stack spill",x:305,y:555,w:250,h:36,
+  what:"When the shadow stack fills, copy the oldest entries to a protected region of memory the program cannot write.",
+  why:"Removes the 32-deep limit. Real systems keep the shadow stack in protected memory pages.",
+  test:"Recursion depth 100 runs with protection on and zero false alarms.",s:["SOK","LWN"],j:"stretch"},
+ // ---- Module C software
+ {id:"S1",m:"S",t:"c",n:"Startup + linker",x:25,y:748,w:150,h:36,
+  what:"crt0.S sets sp to the top of data memory, clears .bss, calls main and then loops; link.ld places code at 0x0 and data/stack in DMEM.",
+  why:"C needs a stack before the first function call, and this file decides where the return addresses live.",
+  test:"In Spike/Ripes and in simulation, main runs and returns to the loop.",s:["XPACK","GB"],j:"I1"},
+ {id:"S2",m:"S",t:"c",n:"Build & hex",x:185,y:748,w:120,h:36,
+  what:"Makefile: riscv-none-elf-gcc -march=rv32im -mabi=ilp32 -nostdlib, then objcopy to hex and objdump to a listing.",
+  why:"One command per program, identical for all three of you and for CI.",
+  test:"make sw PROG=fib produces fib.hex and fib.dis.",s:["XPACK"],j:"I1"},
+ {id:"S3",m:"S",t:"c",n:"Mini runtime",x:315,y:748,w:130,h:36,
+  what:"putc/puts/print_hex over the UART registers, read_cycles(), set_leds(). No libc.",
+  why:"Lets every workload print its result and timing on bare metal.",
+  test:"Hello string in simulation (decoded UART) and on the board.",s:["NAND"],j:"I1"},
+ {id:"S4",m:"S",t:"c",n:"5+ workloads",x:455,y:748,w:150,h:36,
+  what:"Recursive Fibonacci, factorial, quicksort, binary-tree traversal, matrix multiply (MUL) and primes/GCD (DIV, REM).",
+  why:"The course requires at least five C programs; recursion exercises the shadow stack hard and proves zero false alarms.",
+  test:"Each output matches Spike's run of the same ELF.",s:["SPIKE","GB"],j:"I1"},
+ {id:"S5",m:"S",t:"c",n:"Attack demo",x:615,y:748,w:140,h:36,
+  what:"A controlled overflow in your own program that overwrites a saved return address so the return lands in hacked().",
+  why:"The 'before' picture of the demo. Build it in week 1 on Ripes/Spike to learn the exact stack offset from the objdump.",
+  test:"Protection off: hacked() runs. Protection on: freeze at the ret.",s:["PHRACK","ROP"],j:"I4"},
+ {id:"S6",m:"S",t:"c",n:"Golden model",x:765,y:748,w:150,h:36,
+  what:"Spike's commit log (every PC and register write) plus a small Python model of the shadow stack.",
+  why:"Gives the expected answer for every program, so AI-written RTL is checked against something independent of the AI.",
+  test:"compare_spike.py reports the first divergence between RTL and Spike.",s:["SPIKE","RVT"],j:"I1"},
+ {id:"S7",m:"S",t:"g",n:"Landing-pad markers",x:925,y:748,w:150,h:36,
+  what:"Put an lpad (auipc x0) at each indirect-call target with an inline-asm macro. Newer GCC versions may emit them with -fcf-protection; check your compiler first.",
+  why:"Needed for the goal-tier forward-edge check (C8).",
+  test:"Function-pointer workload passes with C8 on; a jump to a non-marked address faults.",s:["CFI","GCC"],j:"I5"},
+ // ---- added Oct 11 (new abstract)
+ {id:"C12",m:"C",t:"c",n:"Lock bit",x:565,y:555,w:150,h:36,o:"Priyank",
+  what:"SHIELD_CTRL bit 4. Writing it as 1 sets the lock; from then on every write to SHIELD_CTRL and SHIELD_HANDLER is ignored until reset (shield_ctrl.v).",
+  why:"An attacker who can write memory could otherwise just store 0 to SHIELD_CTRL and switch protection off. The lock closes that door after boot.",
+  test:"shield_ctrl_tb: 1,001 writes after the lock, 0 changes; lock.c traps with the lock and is hijacked without it.",s:["CFI"],j:"I4"},
+ {id:"A16",m:"A",t:"g",n:"Bimodal BHT",x:40,y:640,w:96,h:24,o:"Avani",what:"64 two-bit counters indexed by PC (bp_bimodal.v).",why:"Simple direction predictor; one half of the tournament.",test:"bp_bimodal_tb.",s:["HH"],j:"I6"},
+ {id:"A17",m:"A",t:"g",n:"gshare",x:140,y:640,w:96,h:24,o:"Avani",what:"256 counters indexed by PC XOR global history (bp_gshare.v).",why:"Learns patterns that depend on the path, e.g. loop exits.",test:"bp_tournament_tb (TTTN pattern).",s:["HH"],j:"I6"},
+ {id:"A18",m:"A",t:"g",n:"Tournament",x:240,y:640,w:96,h:24,o:"Avani",what:"Chooser table picks bimodal or gshare per branch; speculative and commit history (bp_tournament.v).",why:"Gets the best of both predictors.",test:"bp_tournament_tb: ≥95% on TTTN, beats bimodal alone.",s:["HH"],j:"I6"},
+ {id:"A19",m:"A",t:"g",n:"BTB",x:340,y:640,w:96,h:24,o:"Avani",what:"16-entry branch target buffer for indirect jalr targets (btb.v).",why:"A jalr target comes from a register, so fetch needs a guess.",test:"btb_tb.",s:["HH"],j:"I6"},
+ {id:"A20",m:"A",t:"g",n:"Return addr stack",x:440,y:640,w:110,h:24,o:"Avani",what:"8-entry RAS with a commit copy for repair after a flush (ras.v).",why:"Predicts returns; it is a predictor, not the security check.",test:"ras_tb.",s:["HH"],j:"I6"},
+ {id:"A21",m:"A",t:"g",n:"Rename table",x:40,y:668,w:96,h:24,o:"Laxmidhar",what:"Register alias table: register → ROB tag or register file (rename_table.v).",why:"Removes WAR/WAW stalls: renaming.",test:"rename_table_tb.",s:["DDCA"],j:"I6"},
+ {id:"A22",m:"A",t:"g",n:"16-entry ROB",x:140,y:668,w:96,h:24,o:"Laxmidhar",what:"Reorder buffer: in-order commit of out-of-order results (rob.v).",why:"Nothing becomes visible before commit, so mispredictions and traps are undone by a flush. ShieldV checks at its head.",test:"rob_tb.",s:["DDCA"],j:"I6"},
+ {id:"A23",m:"A",t:"g",n:"Reservation stn",x:240,y:668,w:96,h:24,o:"Laxmidhar",what:"Waiting rooms in front of the ALU (4) and M-unit (2) with CDB wake-up (rs.v).",why:"Lets ready instructions go before older waiting ones.",test:"rs_tb.",s:["DDCA"],j:"I6"},
+ {id:"A24",m:"A",t:"g",n:"Load/store queue",x:340,y:668,w:96,h:24,o:"Laxmidhar",what:"8 entries; stores write at commit; loads go early only when safe; I/O loads only at the ROB head (lsq.v).",why:"Keeps memory and I/O behaving exactly like the in-order program.",test:"lsq_tb.",s:["DDCA"],j:"I6"},
+ {id:"A25",m:"A",t:"g",n:"CDB + commit",x:440,y:668,w:110,h:24,o:"Laxmidhar",what:"Common data bus arbiter (cdb_arbiter.v) and the commit logic in core_ooo.v.",why:"One result per cycle is broadcast; one instruction per cycle commits and is shown to ShieldV.",test:"cdb_arbiter_tb, core_ooo_tb, riscv-tests --core ooo.",s:["DDCA"],j:"I6"},
+ {id:"S8",m:"S",t:"g",n:"Lock + canary attacks",x:25,y:792,w:190,h:36,o:"Priyank",what:"lock.c (lock demo), attack_skip.c (an overwrite that steps over the canary); canaries built with -fstack-protector-all.",why:"Show the lock working and compare ShieldV with compiler canaries on the same core.",test:"run_prog.py all: lock → trap, lock_off → hijacked, canary catches linear overflow only.",s:["PHRACK"],j:"I5"}
+];
+const MOD = {A:"G1 · Core",B:"G2 · RV32M + SoC",C:"G3 · ShieldV hardware",S:"G3 · Software"};
+const OWN = {A:"G1",B:"G2",C:"Priyank",S:"Priyank"};
+const OWNER_OF = {A1:"Avani",A2:"Avani",A3:"Avani",A4:"Avani",A5:"Avani",A6:"Avani",A7:"Avani",A13:"Avani",A15:"Avani",
+  A8:"Laxmidhar",A9:"Laxmidhar",A10:"Laxmidhar",A11:"Laxmidhar",A12:"Laxmidhar",A14:"Laxmidhar",
+  B1:"Nishant",B2:"Nishant",B3:"Nishant",B4:"Nilesh",B5:"Nilesh",B6:"Nilesh",B7:"Nilesh",B8:"Nilesh",B9:"Nilesh",B10:"Nilesh",B11:"Nilesh"};
+const PLANNED_IDS = {C10:1,C11:1};
+const TIER = {c:"Commitment",g:"Goal",s:"Stretch"};
+const NS = "http://www.w3.org/2000/svg";
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+
+// ---- draw map
+const svg = document.getElementById("map-svg");
+const regions = [
+  [10,10,1080,695,"FPGA · Nexys A7-100T · top module (B11)"],
+  [30,40,700,330,"Module A · 3-stage RV32IM core"],
+  [30,405,700,195,"Module C · ShieldV security unit"],
+  [750,40,330,550,"Module B · SoC shell & I/O"],
+  [30,610,1050,88,"G1 (goal) · out-of-order core, the other build option (core_ooo.v)"],
+  [10,715,1080,125,"G3 · software that runs on the core"]
+];
+regions.forEach(r=>{const g=el("g",{class:"region"},svg);el("rect",{x:r[0],y:r[1],width:r[2],height:r[3],rx:8},g);const t=el("text",{x:r[0]+12,y:r[1]+17},g);t.textContent=r[4];});
+// stage labels
+[["IF / ID",45],["EX",305],["MEM / WB",550]].forEach(s=>{const t=el("text",{x:s[1],y:76,class:"wlab"},svg);t.textContent="stage: "+s[0];});
+// ghost (board, laptop)
+[[765,450,300,56,"Board: 16 LEDs · 8-digit display","16 switches · USB-UART cable"],[765,520,300,56,"Laptop: serial terminal","trace decoder · Vivado ILA"]].forEach(gd=>{
+  const g=el("g",{class:"ghost"},svg);el("rect",{x:gd[0],y:gd[1],width:gd[2],height:gd[3],rx:6},g);const t=el("text",{x:gd[0]+12,y:gd[1]+24},g);t.textContent=gd[3+1];const t2=el("text",{x:gd[0]+12,y:gd[1]+42},g);t2.textContent=gd[5];});
+// wires
+el("defs",{},svg).innerHTML='<marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>';
+function wire(d,cls,lab,lx,ly){const p=el("path",{d:d,class:"wire "+(cls||""),"marker-end":"url(#ah)"},svg);p.style.color=cls==="sec"?"var(--c)":"var(--muted)";if(lab){const t=el("text",{x:lx,y:ly,class:"wlab "+(cls||"")},svg);t.textContent=lab;}}
+wire("M715,112 L763,112","", "IF-2",722,105);
+wire("M330,370 L330,443","", "IF-3: ex_valid · instr · pc · target · link",338,392);
+wire("M640,443 L640,372","sec","freeze · trap",648,392);
+wire("M716,522 L740,522 L740,352 L763,352","sec","",0,0);
+wire("M20,740 L20,82 L215,82 L215,88","", "",0,0);
+{const t=el("text",{x:28,y:520,class:"wlab",transform:"rotate(-90 28 520)"},svg);t.textContent="imem.hex → instruction RAM";}
+// blocks
+const byId={};
+B.forEach(b=>{
+  const g=el("g",{class:"blk "+b.m+" "+b.t,tabindex:"0",role:"button","aria-label":b.id+" "+b.n,"data-id":b.id},svg);
+  el("rect",{x:b.x,y:b.y,width:b.w,height:b.h,rx:5},g);
+  if(b.vert){
+    const t=el("text",{x:b.x+b.w/2,y:b.y+b.h/2,class:"bid","text-anchor":"middle",transform:"rotate(-90 "+(b.x+b.w/2)+" "+(b.y+b.h/2)+")",dy:"3.5"},g);t.textContent=b.id+" pipeline regs";
+    const g2=el("g",{class:"blk "+b.m+" "+b.t,tabindex:"-1","data-id":b.id},svg);
+    el("rect",{x:528,y:84,width:16,height:220,rx:5},g2);
+    const t2=el("text",{x:536,y:194,class:"bid","text-anchor":"middle",transform:"rotate(-90 536 194)",dy:"3.5"},g2);t2.textContent=b.id+" pipeline regs";
+    g2.addEventListener("click",()=>select(b.id));
+  } else if(b.h<40){
+    const t=el("text",{x:b.x+10,y:b.y+b.h/2+4,class:"bid"},g);t.textContent=b.id;
+    const n=el("text",{x:b.x+42,y:b.y+b.h/2+4,class:"bnm"},g);n.textContent=b.n;
+  } else {
+    const t=el("text",{x:b.x+9,y:b.y+15,class:"bid"},g);t.textContent=b.id+(b.t!=="c"?"  · "+TIER[b.t].toLowerCase():"");
+    const n=el("text",{x:b.x+9,y:b.y+33,class:"bnm"},g);n.textContent=b.n;
+  }
+  g.addEventListener("click",()=>select(b.id));
+  g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select(b.id);}});
+  byId[b.id]=b;
+});
+const det=document.getElementById("detail");
+function link(k){const r=L[k];return '<a href="'+r[1]+'" target="_blank" rel="noopener">'+r[0]+'</a>';}
+function select(id){
+  const b=byId[id];
+  svg.querySelectorAll(".blk").forEach(g=>g.classList.toggle("on",g.dataset.id===id));
+  const col={A:"var(--a)",B:"var(--b)",C:"var(--c)",S:"var(--s)"}[b.m];
+  det.innerHTML='<div class="did" style="color:'+col+'">'+b.id+' · '+MOD[b.m]+'</div><h3>'+b.n+'</h3>'+
+   '<div><span class="pill">'+TIER[b.t]+'</span><span class="pill">'+(b.o||OWNER_OF[b.id]||OWN[b.m])+'</span><span class="pill">joins at '+b.j+'</span><span class="pill">'+(PLANNED_IDS[b.id]?'planned · no RTL yet':'built · passes its tests in simulation')+'</span></div>'+
+   '<dl><div><dt>What it is</dt><dd>'+b.what+'</dd></div><div><dt>Why it exists</dt><dd>'+b.why+'</dd></div>'+
+   '<div><dt>How you prove it works</dt><dd>'+b.test+'</dd></div><div><dt>Read first</dt><dd>'+b.s.map(link).join(" · ")+'</dd></div></dl>';
+}
+select("C2");
+
+// ---- module columns
+const MODS=[
+ {k:"A",title:"Core",who:"G1 · Avani (datapath, predictor) · Laxmidhar (pipeline, out-of-order engine)",ids:["A1","A2","A3","A4","A5","A6","A7","A15","A8","A9","A10","A11","A12","A13","A14","A16","A17","A18","A19","A20","A21","A22","A23","A24","A25"],
+  stub:"Uses an M-unit stub (behavioural * and / with a fake busy delay) and a ShieldV stub that never fires.",
+  alone:"Hand-written assembly tests and riscv-tests rv32ui in Icarus, compared against Spike. A single-cycle version first, then the pipeline.",
+  done:"rv32ui + rv32um pass on both cores; programs match the golden model; ≥50 MHz in-order after synthesis."},
+ {k:"B",title:"RV32M + SoC",who:"G2 · Nishant (M-unit, canary study) · Nilesh (SoC, FPGA, cost)",ids:["B1","B2","B3","B4","B5","B6","B7","B8","B9","B10","B11"],
+  stub:"Tests the M-unit with its own testbench; drives the bus with a tiny 'bus exerciser' state machine instead of a CPU.",
+  alone:"The I/O is proven on the real board in week 2 with the exerciser printing over UART, before any CPU exists.",
+  done:"10k random MUL/DIV checks + all spec edges pass; board prints SHIELDV OK and drives LEDs and display."},
+ {k:"C",title:"ShieldV + software",who:"G3 · Priyank (ShieldV, lock bit, software, formal)",ids:["C1","C2","C3","C4","C5","C6","C7","C12","C9","C8","C10","C11","S1","S2","S3","S4","S5","S6","S7","S8"],
+  stub:"Tests the shield with a 'fake pipeline' testbench that replays call/return sequences taken from Spike logs of the real workloads.",
+  alone:"Software runs on Spike and Ripes from week 1; the attack is proven there before any hardware exists.",
+  done:"Replay of all workloads: zero false alarms; every injected mismatch caught; attack proven on Spike."}
+];
+const mw=document.getElementById("mods");
+MODS.forEach(m=>{
+  const d=document.createElement("div");d.className="mod "+m.k;
+  let html='<header><span class="who">'+m.who+'</span><h3>'+({A:"G1",B:"G2",C:"G3"}[m.k])+' · '+m.title+'</h3></header>';
+  let hw=m.ids.filter(i=>i[0]!=="S"), sw=m.ids.filter(i=>i[0]==="S");
+  const li=i=>{const b=byId[i];return '<li data-id="'+i+'" tabindex="0"><div class="row"><span class="id">'+i+'</span><span class="nm">'+b.n+'</span>'+(b.t!=="c"?'<span class="tierdot">'+TIER[b.t].toLowerCase()+'</span>':'')+'</div><span class="why">'+b.why+'</span></li>';};
+  html+='<div class="subhead">Build order'+(sw.length?' · hardware':'')+'</div><ol>'+hw.map(li).join("")+'</ol>';
+  if(sw.length) html+='<div class="subhead" style="color:var(--s)">Software</div><ol>'+sw.map(li).join("")+'</ol>';
+  html+='<div class="foot"><div><b>Stubs</b><br>'+m.stub+'</div><div><b>Proven alone by</b><br>'+m.alone+'</div><div><b>Done when</b><br>'+m.done+'</div></div>';
+  d.innerHTML=html;mw.appendChild(d);
+});
+mw.addEventListener("click",e=>{const l=e.target.closest("li[data-id]");if(l){select(l.dataset.id);document.getElementById("map").scrollIntoView({behavior:"smooth"});}});
+mw.addEventListener("keydown",e=>{const l=e.target.closest("li[data-id]");if(l&&(e.key==="Enter")){select(l.dataset.id);document.getElementById("map").scrollIntoView({behavior:"smooth"});}});
+
+// ---- ladder
+const R=[
+ {n:"I0",d:"Oct 4–5",t:"Walking skeleton",parts:[["A","core stub"],["B","SoC stub"],["C","shield stub"],["S","crt0 + hello"]],stubs:[],
+  gate:"Top module compiles with every module as a stub that obeys its contract; CI runs on GitHub and is green.",
+  why:"Proves the contracts actually fit together before anyone writes real logic.",course:""},
+ {n:"I1",d:"Oct 16–18 (M2)",t:"Core + memories + software, in simulation",parts:[["A","A1–A15"],["S","S1–S4, S6"]],stubs:["M-unit stub","shield stub"],
+  gate:"riscv-tests rv32ui all pass; 5 RV32I C programs match Spike's commit log.",
+  why:"The CPU is the foundation; prove it alone before anything leans on it.",course:""},
+ {n:"I2",d:"Oct 20–22 (M3)",t:"+ SoC shell, on the FPGA",parts:[["B","B4–B11"]],stubs:["M-unit stub","shield stub"],
+  gate:"Recursive Fibonacci prints over UART and shows on the 7-segment display on the real board.",
+  why:"First time the CPU leaves simulation; I/O was already proven alone, so any failure is in the join.",course:"Covers Oct 25 status: one core functionality end to end"},
+ {n:"I3",d:"Oct 23–25 (M4)",t:"+ M-unit",parts:[["B","B1–B3"]],stubs:["shield stub"],
+  gate:"riscv-tests rv32um pass; matrix multiply and primes run on the board; MUL/DIV edge cases pass.",
+  why:"Meets the course minimum: MUL/DIV and 5 C programs on the FPGA.",course:"Ready for Oct 27 mini-demo"},
+ {n:"I4",d:"Oct 29–Nov 1 (M5)",t:"+ ShieldV with lock and trap",parts:[["C","C1–C7, C9, C12"],["S","S5, S8"]],stubs:[],
+  gate:"All workloads run with protection on and zero false alarms. Attack: switch off → HACKED; on → trapped, report on UART, fault PC on display; a write to the locked SHIELD_CTRL is ignored.",
+  why:"The commitment system, end to end on the board.",course:"Commitment for Nov 1 near-final report"},
+ {n:"I5",d:"Nov 2–4 (M6)",t:"Goal tier: evaluation",parts:[["C","C8"],["S","S7, S8"],["B","B9 numbers, canaries, cost"],["A","A14 tracer"]],stubs:[],
+  gate:"Landing-pad check works; canary comparison, CPI, prediction and with/without-ShieldV cost frozen; real timing diagrams generated; formal proofs.",
+  why:"Turns a working project into a measured, defended one for the final report.",course:"Nov 5 report + video"},
+ {n:"I6",d:"Nov 1 sim · Nov 2–6 board",t:"Out-of-order core (build option)",parts:[["A","A16–A25"],["C","same ShieldV, at commit"]],stubs:[],
+  gate:"riscv-tests rv32ui + rv32um pass with --core ooo (by Nov 1, M5); then through Vivado and onto the board if timing allows. The in-order bitstream stays the fallback.",
+  why:"The extension from the new abstract, joined only after the minimum system works.",course:"Nov 7–8 demo (either bitstream)"}
+];
+const rw=document.getElementById("rungs");
+R.forEach(r=>{
+  const d=document.createElement("div");d.className="rung";
+  d.innerHTML='<div class="num">'+r.n+'<small>'+r.d+'</small></div><div class="body"><div class="top"><h3>'+r.t+'</h3>'+(r.course?'<span class="course">'+r.course+'</span>':'')+'</div>'+
+   '<div class="stack">'+r.parts.map(p=>'<span class="'+p[0]+'">'+p[1]+'</span>').join("")+r.stubs.map(s=>'<span class="stub">'+s+'</span>').join("")+'</div>'+
+   '<div class="gate"><b>Gate test</b> '+r.gate+'</div><div class="muted" style="font-size:14px">'+r.why+'</div></div>';
+  rw.appendChild(d);
+});
+
+// ---- gantt
+const W=[["Oct 3–4","W0"],["Oct 5–11","W1"],["Oct 12–18","W2"],["Oct 19–25","W3"],["Oct 26–Nov 1","W4"],["Nov 2–8","W5"]];
+const G=[
+ ["G1 Avani · datapath + predictor","A",[[1,1,"M1: ALU, regfile, decoder, imm, memories; single-cycle core"],[2,1,"M2: riscv-tests runner; bimodal, gshare, tournament, BTB, RAS as blocks"],[3,1,"rv32ui/um regression on the SoC"],[4,1,"riscv-tests on both cores (M5)"],[5,1,"Prediction-accuracy study, viva"]]],
+ ["G1 Laxmidhar · pipeline + OoO","A",[[1,1,"M1: LSU; pipeline registers"],[2,1,"M2: forwarding, hazards, flush; pipeline passes rv32ui; rename table"],[3,1,"M4: ROB, RS, LSQ, CDB as blocks"],[4,1,"M5: core_ooo passes riscv-tests in sim; random diff tests"],[5,1,"M6: OoO timing diagrams; OoO on Vivado"]]],
+ ["G2 Nishant · RV32M","B",[[1,1,"M1: MUL / DIV pass 10k random + edges"],[2,1,"Extra edge cases; M-unit size"],[3,1,"M4: RV32M integrated, rv32um passes"],[4,1,"rv32um on the OoO core"],[5,1,"Canary vs ShieldV comparison"]]],
+ ["G2 Nilesh · SoC + FPGA","B",[[1,1,"Clock, LEDs, switches, 7-seg, UART; pins"],[2,1,"M2: FPGA I/O demo; bus decoder; CI"],[3,1,"M3 (Oct 22): SoC with C programs on the board"],[4,1,"ILA; counters; lock + trap on the board"],[5,1,"With/without-ShieldV cost; OoO bitstream; video"]]],
+ ["G3 Priyank · ShieldV + software","C",[[1,1,"M1: detector + shadow stack verified; attack program"],[2,1,"M2: commit control, violation FSM, lock bit; workloads"],[3,1,"Fault regs, landing pads, trap handler"],[4,1,"M5: ShieldV with lock and trap on the board"],[5,1,"Formal proofs (planned); report figures"]]],
+ ["All · integration","I",[[0,1,"I0 skeleton + CI"],[2,1,"I1 in simulation (Oct 16–18)"],[3,1,"I2 board (Oct 22) · I3 RV32IM (Oct 25)"],[4,1,"I4 ShieldV + lock on board (Nov 1) · OoO in sim"],[5,1,"I5 evaluation · I6 OoO on board (Nov 2–6)"]]],
+ ["Course deadlines","D",[[0,1,"Oct 4 abstract"],[1,1,"Oct 11 block diagrams + abstract v2"],[2,1,"Oct 13 presentation"],[3,1,"Oct 25 status report"],[4,1,"Oct 27 mini-demo · Nov 1 near-final"],[5,1,"Nov 5 report + video · Nov 7–8 demo"]]]
+];
+const gt=document.getElementById("gantt");
+let gh='<div class="h"></div>'+W.map(w=>'<div class="h"><b>'+w[1]+'</b>'+w[0]+'</div>').join("");
+G.forEach((row,ri)=>{
+  const r=ri+2;
+  gh+='<div class="lane" style="grid-row:'+r+';grid-column:1">'+row[0]+'</div>';
+  for(let c=0;c<6;c++) gh+='<div class="cell" style="grid-row:'+r+';grid-column:'+(c+2)+'"></div>';
+  row[2].forEach(b=>{gh+='<div class="bar '+row[1]+'" style="grid-row:'+r+';grid-column:'+(b[0]+2)+' / span '+b[1]+'">'+b[2]+'</div>';});
+});
+gt.innerHTML=gh;
+
+// ---- waveform
+const wv=document.getElementById("wave");
+const N=10, X0=150, CW=72, RH=34, Y0=34;
+const sig=[
+ {n:"clk",type:"clk"},
+ {n:"IF/ID pc",type:"bus",v:["0x100","0x104","0x200","0x204","0x208","0x20c","0x210","0x214","—","—"]},
+ {n:"EX pc",type:"bus",v:["—","0x100","bubble","0x200","0x204","0x208","0x20c","0x210","0x210","0x210"]},
+ {n:"EX instr",type:"bus",v:["","jal ra","—","addi sp","sw (ovf)","lw ra","addi sp","ret","held","held"],alert:[4,7]},
+ {n:"is_call",type:"bit",v:[0,1,0,0,0,0,0,0,0,0]},
+ {n:"is_ret",type:"bit",v:[0,0,0,0,0,0,0,1,0,0]},
+ {n:"ss_ptr",type:"bus",v:["0","0","1","1","1","1","1","1","1","1"]},
+ {n:"ss_top",type:"bus",v:["—","—","0x104","0x104","0x104","0x104","0x104","0x104","0x104","0x104"]},
+ {n:"ex_target",type:"bus",v:["","0x200","","","","","","0x300","",""],alert:[7]},
+ {n:"mismatch",type:"bit",v:[0,0,0,0,0,0,0,1,0,0],hi:true},
+ {n:"freeze",type:"bit",v:[0,0,0,0,0,0,0,0,1,1],hi:true}
+];
+el("rect",{x:0,y:0,width:900,height:440,fill:"var(--panel)"},wv);
+for(let c=0;c<=N;c++){el("line",{x1:X0+c*CW,y1:18,x2:X0+c*CW,y2:Y0+sig.length*RH,class:"grid"},wv);}
+for(let c=0;c<N;c++){const t=el("text",{x:X0+c*CW+CW/2,y:14,"text-anchor":"middle",class:"lbl"},wv);t.textContent="c"+(c+1);}
+sig.forEach((s,i)=>{
+  const y=Y0+i*RH, top=y+6, bot=y+RH-8, mid=(top+bot)/2;
+  const lt=el("text",{x:10,y:mid+4,class:"lbl"},wv);lt.textContent=s.n;
+  if(s.type==="clk"){let d="M"+X0+","+bot;for(let c=0;c<N;c++){const x=X0+c*CW;d+=" L"+x+","+top+" L"+(x+CW/2)+","+top+" L"+(x+CW/2)+","+bot+" L"+(x+CW)+","+bot;}el("path",{d:d,class:"clk"},wv);}
+  else if(s.type==="bit"){let d="";for(let c=0;c<N;c++){const x=X0+c*CW,yy=s.v[c]?top:bot;d+=(c===0?"M"+x+","+yy:" L"+x+","+yy)+" L"+(x+CW)+","+yy;}el("path",{d:d,class:"sig"+(s.hi?" hi":"")},wv);}
+  else {let c=0;while(c<N){let e=c;while(e+1<N&&s.v[e+1]===s.v[c])e++;const x1=X0+c*CW,x2=X0+(e+1)*CW,k=5;
+    const al=s.alert&&s.alert.some(a=>a>=c&&a<=e);
+    if(s.v[c]===""){el("path",{d:"M"+x1+","+mid+" L"+x2+","+mid,class:"sig",style:"stroke:var(--muted);stroke-dasharray:3 3"},wv);}
+    else {el("path",{d:"M"+x1+","+mid+" L"+(x1+k)+","+top+" L"+(x2-k)+","+top+" L"+x2+","+mid+" L"+(x2-k)+","+bot+" L"+(x1+k)+","+bot+" Z",class:"bus"+(al?" alert":"")},wv);
+      const t=el("text",{x:(x1+x2)/2,y:mid+4,"text-anchor":"middle"},wv);t.textContent=s.v[c];}
+    c=e+1;}}
+});
+const ann=el("text",{x:X0+7*CW+CW/2,y:Y0+sig.length*RH+16,"text-anchor":"middle",style:"fill:var(--c)"},wv);ann.textContent="caught: 0x300 ≠ 0x104";
+const ann2=el("text",{x:X0+1*CW+CW/2,y:Y0+sig.length*RH+16,"text-anchor":"middle",class:"lbl"},wv);ann2.textContent="push 0x104";
+
+// ---- library
+const LIB=[
+ {t:"Track 1 · Digital design and the CPU",who:"Modules A and B; everyone for the viva",items:[
+  ["HH","Ch. 4 (HDL) and Ch. 7 (single-cycle, pipelined, hazards). The closest book to what you are building."],
+  ["HHV","The same chapters as short videos, good for watching before generating a block."],
+  ["DDCA","Lectures on pipelining, data/control hazards and branch handling, explained very clearly."],
+  ["RVM","RV32I and M chapters: exact instruction behaviour, including the DIV edge cases."],
+  ["RIPES","Run your own C on a visual pipeline; watch forwarding and stalls happen."],
+  ["GB","Paste a C function, choose a RISC-V gcc, see the prologue that saves ra to the stack."]]},
+ {t:"Track 2 · FPGA and I/O",who:"Module B; Module A for debugging",items:[
+  ["NEXYS","Pins, clock, USB-UART and the 7-segment wiring on your board."],
+  ["NAND","A step-by-step UART transmitter with a testbench."],
+  ["ZIP","Practical articles on pipelines, handshakes and why designs fail on hardware."],
+  ["ILA","How to probe internal signals on the running FPGA: your tool for 'works in sim, fails on board'."]]},
+ {t:"Track 3 · Security (the new part)",who:"Module C owns it; all three must explain it",items:[
+  ["PHRACK","The classic explanation of stack buffer overflows. x86, but the idea maps directly to your RISC-V stack frame."],
+  ["ROP","Return-oriented programming: why controlling one return address is so powerful, and why canaries are not enough."],
+  ["ABADI","The paper that defined control-flow integrity. Read the introduction and the threat model."],
+  ["SOK","The best overview of shadow-stack designs and their trade-offs. Read the design-space and evaluation sections."],
+  ["CSUR","Survey of CFI precision and overhead, useful for your evaluation chapter."],
+  ["CFI","The ratified Zicfiss/Zicfilp text: call/return definitions, landing pads, software-check exception (cause 18)."],
+  ["CFIB","Backward-edge chapter source, with the rationale for the x1/x5 rules."],
+  ["CVA6","The closest prior work: the first published hardware implementation of the standard extensions (Feb 2026), with 1.0% area overhead in 22 nm. Copy its evaluation method."],
+  ["LWN","How Linux plans to use RISC-V CFI, for the 'industry relevance' slide."],
+  ["GCC","Compiler support for emitting the CFI instructions (-fcf-protection)."]]},
+ {t:"Track 4 · Tools and the AI workflow",who:"Set up together on Oct 4–5",items:[
+  ["CCMEM","How CLAUDE.md is loaded and what to put in it."],
+  ["CCSUB","Writing the rtl-reviewer, tb-writer and viva-coach subagents."],
+  ["CCHOOK","The PostToolUse lint hook and exit-code behaviour."],
+  ["CCSKILL","Packaging repeatable recipes like timing-diagram."],
+  ["CCVS","Installing in VS Code forks via Open VSX, or running the CLI in the terminal."],
+  ["AG","Installing extensions inside Antigravity."],
+  ["WD","Timing-diagram language; try the online editor first."],
+  ["V2W","Converts a VCD window into WaveDrom JSON."],
+  ["SPIKE","Golden reference simulator; use --log-commits for traces."],
+  ["RVT","Official per-instruction test programs (rv32ui, rv32um)."],
+  ["VER","Lint and fast simulation."],["NSVG","Auto-draws a schematic from RTL to check your block diagram."]]}
+];
+const lb=document.getElementById("lib");
+LIB.forEach(tr=>{const d=document.createElement("div");d.className="track";
+  d.innerHTML='<header><h3>'+tr.t+'</h3><span class="muted" style="font-size:13px">'+tr.who+'</span></header><ul>'+tr.items.map(i=>'<li>'+link(i[0])+'<span>'+i[1]+'</span></li>').join("")+'</ul>';lb.appendChild(d);});
+
+// ---- viva
+const V=[
+ ["Why can't the attacker's store overwrite the shadow stack too?","It lives in a separate small RAM (C2) with no connection to the data bus. Only the commit control (C4) writes it, and only on a committed call. A store instruction has no path to it."],
+ ["Why do you check the return in EX and not in decode?","The jalr target needs the value of ra, which may still be arriving through forwarding; it is only final in EX. EX is also where the redirect happens, so the check can block the jump before any wrong instruction runs."],
+ ["What happens to the shadow stack when a call is fetched down a wrong path?","Nothing. The flush clears its valid bit before it commits, and C4 only pushes when ex_valid is high with no stall or flush."],
+ ["Why only x1 and x5?","They are the RISC-V link registers (ra and the alternate link t0). The ratified spec defines calls and returns using exactly these registers, so ordinary compiled code follows the rule."],
+ ["How is this better than a stack canary?","A canary is a secret value checked in software before returning. It costs instructions on every call, can be leaked and only detects contiguous overwrites. The shadow stack compares the exact return address in hardware, in parallel, at zero extra cycles."],
+ ["Which attacks does ShieldV not stop?","Hijacks through function pointers or indirect jumps (forward edge) unless landing pads are on, and data-only attacks that change variables without changing control flow."],
+ ["What happens at recursion depth 33?","The pointer reports overflow and the violation FSM raises a different cause. Real Zicfiss keeps the shadow stack in protected memory pages; spilling is your stretch goal."],
+ ["What would setjmp/longjmp do to your design?","longjmp skips several returns at once, so the implicit shadow stack would see a mismatch. Real systems restore the shadow-stack pointer as well. The workloads avoid it and the report lists it as a limitation."],
+ ["What is the overhead?","Zero extra cycles per call or return, because the compare runs alongside execution. Area is a few hundred LUTs plus a small LUTRAM (confirm with Vivado). Compare with a software shadow stack that costs extra instructions on every call."],
+ ["How is your design different from the ratified Zicfiss?","Zicfiss uses explicit sspush/sspopchk instructions that the compiler inserts, and a memory-backed shadow stack. ShieldV infers pushes and pops from ordinary jal/jalr, so it needs no compiler change; real Zicfiss decoding is the stretch goal."],
+ ["Explain MULH vs MULHU vs MULHSU.","All return the upper 32 bits of the 64-bit product. They differ in how each operand is read: both signed, both unsigned, or rs1 signed and rs2 unsigned. Extending each operand to 33 bits with the right sign bit lets one signed multiplier do all three."],
+ ["What does DIV return when dividing by zero?","Quotient all ones (−1 signed), remainder equal to the dividend. INT_MIN / −1 gives quotient INT_MIN and remainder 0. No exception is raised."],
+ ["Why synchronise the switches?","They change at times unrelated to the clock. A flip-flop sampling during a change can go metastable, so two flip-flops in series give it a cycle to settle before the logic uses it."],
+ ["How do you know your timing diagram is real?","It is cut from the VCD of the actual RTL running the actual program, and Scenario 2 is also captured on the board with the ILA. It is not drawn by hand."],
+ ["What does the lock bit protect against, and what can still turn protection off?","Without it, any memory-write bug lets an attacker store 0 to SHIELD_CTRL first and then hijack a return. After boot code sets bit 4, shield_ctrl.v ignores every write to CTRL and HANDLER until reset. The physical switch SW0 still works, because it is not a memory write."],
+ ["Why does the out-of-order core check returns at commit and not when the jalr executes?","A jalr may execute on a wrong path or before older instructions finish. Only at the ROB head is it certain to be part of the program, in program order, so the shadow stack sees exactly the same sequence of calls and returns as on the in-order core."],
+ ["The return-address stack and the shadow stack both hold return addresses. Why have both?","The RAS is a predictor in the fetch stage: it can be wrong and is repaired after a flush; it only costs time. The shadow stack is the security check at commit; it is isolated from the data bus and its mismatch stops the program."],
+ ["Where do canaries fail and ShieldV does not?","A canary only detects an overwrite that passes through it. attack_skip.c writes the return address directly with an out-of-range index and leaves the canary intact: canaries alone are hijacked, ShieldV still traps."],
+ ["How many stall cycles does a load-use hazard cost in your pipeline, and why?","Derive this from your own design: when does block RAM return data relative to when the next instruction needs it in EX? If you can't derive it, revisit A9 and A10 before the viva."]
+];
+const vw=document.getElementById("viva");
+V.forEach(q=>{const d=document.createElement("details");d.innerHTML='<summary>'+q[0]+'</summary><p>'+q[1]+'</p>';vw.appendChild(d);});
+
+// ---- sources
+const sw2=document.getElementById("srcs");
+sw2.innerHTML=Object.keys(L).map(k=>'<p>'+link(k)+'</p>').join("")+'<p><a href="https://code.claude.com/docs/en/hooks" target="_blank" rel="noopener">Claude Code: hooks reference (exit-code behaviour)</a></p>';
+})();
+</script>
+
+</body></html>
