@@ -1,0 +1,39 @@
+# Simulation outputs
+*.vcd
+*.fst
+*.vvp
+a.out
+obj_dir/
+build/
+
+# Vivado project and run outputs
+*.jou
+*.log
+*.str
+.Xil/
+*.cache/
+*.runs/
+*.hw/
+*.ip_user_files/
+*.sim/
+*.gen/
+usage_statistics_webtalk.*
+vivado_pid*.zip
+
+# Compiled software (keep sources, regenerate these)
+*.o
+*.elf
+
+# Editors and OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+__pycache__/
+
+dfx_runtime.txt
+hardware_lab_shieldv/
+.Xil/
+*.jou
+*.log
