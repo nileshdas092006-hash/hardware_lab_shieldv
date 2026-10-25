@@ -68,6 +68,32 @@ module divider_tb;
         for (k = 0; k < 4; k = k + 1)
             for (i = 0; i < 100; i = i + 1)
                 run_one(k, edges[i / 10], edges[i % 10]);
+	        // Additional directed edge cases for G2-NS14
+
+        // DIV: signed division, truncation toward zero
+        run_one(2'd0, 32'd7,          32'd2);          //  7 / 2 =  3
+        run_one(2'd0, 32'hFFFF_FFF9,  32'd2);          // -7 / 2 = -3
+        run_one(2'd0, 32'd7,          32'hFFFF_FFFE);  //  7 / -2 = -3
+        run_one(2'd0, 32'hFFFF_FFF9,  32'hFFFF_FFFE);  // -7 / -2 = 3
+        run_one(2'd0, 32'h8000_0000,  32'd1);          // INT_MIN / 1
+        run_one(2'd0, 32'h8000_0000,  32'd2);          // INT_MIN / 2
+        run_one(2'd0, 32'h7FFF_FFFF,  32'd2);          // INT_MAX / 2
+
+        // DIVU: unsigned division
+        run_one(2'd1, 32'hFFFF_FFFF,  32'd2);
+        run_one(2'd1, 32'h8000_0000,  32'h7FFF_FFFF);
+        run_one(2'd1, 32'h7FFF_FFFF,  32'h8000_0000);
+
+        // REM: signed remainder
+        run_one(2'd2, 32'hFFFF_FFF9,  32'd2);          // -7 % 2 = -1
+        run_one(2'd2, 32'd7,          32'hFFFF_FFFE);  //  7 % -2 = 1
+        run_one(2'd2, 32'hFFFF_FFF9,  32'hFFFF_FFFE);  // -7 % -2 = -1
+        run_one(2'd2, 32'h8000_0000,  32'hFFFF_FFFF);  // INT_MIN % -1 = 0
+
+        // REMU: unsigned remainder
+        run_one(2'd3, 32'hFFFF_FFFF,  32'd2);
+        run_one(2'd3, 32'h8000_0000,  32'h7FFF_FFFF);
+        run_one(2'd3, 32'h7FFF_FFFF,  32'h8000_0000);
         // random: mix of full-width and small divisors
         for (i = 0; i < 10000; i = i + 1)
             run_one({$random} % 4, $random, (i % 2) ? $random : ($random % 1000));
