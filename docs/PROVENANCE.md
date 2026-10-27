@@ -11,7 +11,9 @@ listed below. The member who commits a file is responsible for understanding it,
 writing its golden table by hand first, and filling in the "reviewed by" column.
 
 Files marked **(you write)** in the commit plans (golden tables, learning logs,
-lab notes, drawings) are written by the team, not by AI. Do not list them here.
+lab notes, drawings) are meant to be written by the team. The exception is the golden
+tables listed under 2026-10-27 below: Claude drafted them from the RTL, and each owner
+checks and signs them.
 
 ## Generation sessions
 
@@ -52,3 +54,21 @@ Every `.v`, `.c`, `.S`, `.py`, `.tcl`, `.xdc`, `.yml` and `.md` file in the repo
 that is not a **(you write)** file was generated on 2026-10-04. When you commit one,
 add a line here with the file, your name and the date you reviewed it, or keep this
 sentence as the record and tick your rows in the commit plan.
+
+## Golden tables drafted on 2026-10-27
+
+Claude drafted these from the RTL at the team lead's request. Each file ends with a
+"Checked by" line, which the owner fills in after checking every row against the
+testbench. The owner is responsible for being able to explain every row in the viva.
+
+| File | Owner | Checked by (name, date) |
+|---|---|---|
+| `G1/Avani/golden/A16-A18_predictor.md` | Avani | |
+| `G1/Laxmidhar/golden/A12_lsu.md` | Laxmidhar | |
+| `G1/Laxmidhar/golden/A8-A11_pipeline.md` | Laxmidhar | |
+| `G1/Laxmidhar/golden/A21_rename.md` | Laxmidhar | |
+| `G1/Laxmidhar/golden/A22_rob.md` | Laxmidhar | |
+| `G2/Nilesh/golden/B7_seg7.md` | Nilesh | |
+| `G3/Priyank/golden/C1_callret.md` | Priyank | |
+| `G3/Priyank/golden/C2_C3_shadow_stack.md` | Priyank | |
+| `G3/Priyank/golden/C6_violation_fsm.drawio` | Priyank | |
