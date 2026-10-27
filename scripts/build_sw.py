@@ -20,7 +20,7 @@ import subprocess
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SW = os.path.join(ROOT, "G3", "Priynk", "sw")
+SW = os.path.join(ROOT, "G3", "Priyank", "sw")
 
 # program name -> source files (relative to sw/)
 PROGRAMS = {
@@ -33,6 +33,8 @@ PROGRAMS = {
     "primes":      ["workloads/primes.c"],
     "fnptr":       ["workloads/fnptr.c", "workloads/fnptr_targets.S"],
     "timing1":     ["workloads/timing1.c"],
+    "deep":        ["workloads/deep.c"],      # 32 return addresses: shadow stack exactly full
+    "deep_over":   ["workloads/deep.c"],      # 33: one more than the shadow stack holds
     "timing_final": ["workloads/timing_final.S"],     # the final timing diagram (scripts/diagrams.py)
     "attack":      ["attack/attack.c"],
     "attack_trap": ["attack/attack_trap.c"],
@@ -47,7 +49,7 @@ PROGRAMS = {
 
 # extra compiler flags for programs that share a source file
 CANARY = ["-fstack-protector-all"]
-PROG_CFLAGS = {"lock_off": ["-DNO_LOCK"], "attack_canary": CANARY, "attack_skip_canary": CANARY}
+PROG_CFLAGS = {"lock_off": ["-DNO_LOCK"], "deep_over": ["-DNEST=32"], "attack_canary": CANARY, "attack_skip_canary": CANARY}
 
 CFLAGS = ["-march=rv32im", "-mabi=ilp32", "-O1", "-g", "-Wall",
           "-ffreestanding", "-nostdlib", "-nostartfiles",
