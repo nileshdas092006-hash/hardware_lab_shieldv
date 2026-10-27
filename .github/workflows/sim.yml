@@ -1,0 +1,31 @@
+# CI: on every push and pull request, lint the Verilog, run every unit
+# testbench and run all C programs (including the attack) on the simulated
+# SoC. A red X on GitHub means something broke; click it to see which test.
+name: sim
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install simulators and RISC-V compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y iverilog verilator gcc-riscv64-unknown-elf make python3
+
+      - name: Lint
+        run: make lint PYTHON=python3
+
+      - name: Unit testbenches
+        run: make test PYTHON=python3 SIM=iverilog
+
+      - name: C programs and attack scenarios on the SoC
+        run: make programs PYTHON=python3 SIM=iverilog
+
+      - name: riscv-tests rv32ui + rv32um
+        run: make riscv-tests PYTHON=python3 SIM=iverilog

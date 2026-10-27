@@ -29,7 +29,7 @@ SKIP = {"soc_tb"}
 def replay_trace(simulator):
     """Run fib on the full SoC with a commit log, then cut the call/return trace."""
     import run_prog
-    sys.path.insert(0, os.path.join(sim.ROOT, "G3", "Priynk", "sw", "golden"))
+    sys.path.insert(0, os.path.join(sim.ROOT, "G3", "Priyank", "sw", "golden"))
     import make_trace
     run_prog.run_one("fib", 1, simulator, log=True, quiet=True)
     out = os.path.join(sim.BUILD, "sw", "fib")

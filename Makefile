@@ -10,7 +10,7 @@
 #   make random                   random programs vs golden model, both cores (Laxmidhar)
 #   make canary                   stack canaries vs ShieldV          (Nishant)
 #   make diagrams                 the top block diagram + the final timing diagram
-#   make sw PROG=fib              compile one C program to hex files (Priynk)
+#   make sw PROG=fib              compile one C program to hex files (Priyank)
 #   make lint                     check all Verilog for mistakes
 #   make fpga PROG=attack         Vivado: bitstream + reports        (Nilesh)
 #   make program                  load the bitstream onto the board  (Nilesh)

@@ -68,10 +68,12 @@ The only stalls are a busy M-unit (MUL 2 cycles, DIV 34) and a ShieldV freeze.
 ## Timing diagram
 
 There is one timing diagram for the whole project: `diagrams/timing_diagram.svg` (and `.png`),
-**12 clock cycles** from a real simulation. `python scripts/diagrams.py timing` runs
-`G3/Priynk/sw/workloads/timing_final.S` (in-order core, SW0 = 1), dumps the 12 cycles that start when
-the first store to SHIELD_CTRL is in EX and cuts them with `scripts/vcd2wave.py`. In those 12 cycles:
-the lock store (`locked` rises), the attacker's store of 0 to SHIELD_CTRL (it stays 0x13), a call
-(`push`, `flush`, bubble), a MUL (`stall`, `m_busy`), the return (`pop`), the stack overwrite, `lw ra`
-forwarded straight into `ret`, and that `ret` caught (`mismatch`, `trap`). The cycle-by-cycle table is
+**24 clock cycles** from a real simulation. `python scripts/diagrams.py timing` runs
+`G3/Priynk/sw/workloads/timing_final.S` (in-order core, SW0 = 1), dumps the 24 cycles that start when
+the first store to SHIELD_CTRL is in EX and cuts them with `scripts/vcd2wave.py`. In those 24 cycles:
+the lock store (`locked` rises), the attacker's store of 0 to SHIELD_CTRL (it stays 0x13), the
+read-back (`bus re`, `bus rdata` = 0x13) forwarded into a `bne` that is not taken, a call (`push`,
+`flush`, bubble), a MUL (`stall`, `m_busy`), the return (`pop`), a taken `beq` (`flush`, `mispredict`),
+the stack overwrite, `lw ra` forwarded straight into `ret`, that `ret` caught (`mismatch`, `trap`,
+fault registers and violation count updated), and the first instructions of the security handler. The cycle-by-cycle table is
 in `diagrams/README.md`; the signal list is `TIMING_SIGNALS` in `scripts/diagrams.py`.

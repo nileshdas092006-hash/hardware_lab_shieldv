@@ -29,6 +29,8 @@ EXPECT = [
     ("bintree",     1, "RESULT: EXIT 0"),
     ("matmul",      1, "RESULT: EXIT 0"),
     ("primes",      1, "RESULT: EXIT 0"),
+    ("deep",        1, "RESULT: EXIT 0"),      # 32 deep: shadow stack full, no false alarm
+    ("deep_over",   1, "RESULT: BLOCKED"),     # 33 deep: overflow stops the core (known limit)
     ("fib",         0, "RESULT: EXIT 0"),      # same answer with protection off
     ("attack",      0, "RESULT: HIJACKED"),    # protection off: the attack works
     ("attack",      1, "RESULT: BLOCKED"),     # protection on: frozen at the ret

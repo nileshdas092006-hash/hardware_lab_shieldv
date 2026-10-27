@@ -33,7 +33,7 @@ for mods in (MODS, MODS_O):
             INST.setdefault(name, set()).add((iname, mname))
 
 COL = {"Avani": "#dbe6fb", "Laxmidhar": "#d4efe9", "Nishant": "#fbefd9", "Nilesh": "#fde3cf",
-       "Priynk": "#fbe0e4", "glue": "#f4f4f4"}
+       "Priyank": "#fbe0e4", "glue": "#f4f4f4"}
 errors = []
 
 
