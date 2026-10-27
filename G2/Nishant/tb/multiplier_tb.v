@@ -61,6 +61,32 @@ module multiplier_tb;
         for (k = 0; k < 4; k = k + 1)
             for (i = 0; i < 64; i = i + 1)
                 run_one(k, edges[i / 8], edges[i % 8]);
+	        // Additional directed edge cases for G2-NS13.
+        // op = 0: MUL
+        // op = 1: MULH   (signed x signed)
+        // op = 2: MULHSU (signed x unsigned)
+        // op = 3: MULHU  (unsigned x unsigned)
+
+        // MUL: low 32-bit result and overflow boundaries
+        run_one(2'd0, 32'h8000_0000, 32'h0000_0002);
+        run_one(2'd0, 32'h7FFF_FFFF, 32'h0000_0002);
+        run_one(2'd0, 32'hFFFF_FFFE, 32'hFFFF_FFFE);
+
+        // MULH: signed x signed
+        run_one(2'd1, 32'h8000_0000, 32'h8000_0001);
+        run_one(2'd1, 32'h7FFF_FFFF, 32'h7FFF_FFFE);
+        run_one(2'd1, 32'hFFFF_FFFE, 32'h8000_0001);
+
+        // MULHSU: signed x unsigned
+        run_one(2'd2, 32'hFFFF_FFFF, 32'hFFFF_FFFF);
+        run_one(2'd2, 32'h8000_0000, 32'hFFFF_FFFF);
+        run_one(2'd2, 32'hFFFF_FFFE, 32'h8000_0000);
+        run_one(2'd2, 32'h7FFF_FFFF, 32'hFFFF_FFFF);
+
+        // MULHU: unsigned x unsigned
+        run_one(2'd3, 32'hFFFF_FFFF, 32'hFFFF_FFFF);
+        run_one(2'd3, 32'hFFFF_FFFF, 32'h8000_0000);
+        run_one(2'd3, 32'h8000_0001, 32'h8000_0001);
         // 10,000 random cases
         for (i = 0; i < 10000; i = i + 1)
             run_one({$random} % 4, $random, $random);
