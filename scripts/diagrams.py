@@ -9,12 +9,14 @@
    but every box must be a real instance and every wire a real net of the
    Verilog; widths are computed from the declarations. Anything that is not in
    the RTL stops the script with an error instead of being drawn.
-2. Timing diagram of the whole project in 12 clock cycles. The assembly program
+2. Timing diagram of the whole project in 24 clock cycles. The assembly program
    timing_final.S is run on the simulated SoC (in-order core, ShieldV on) and the
-   12 cycles starting at its first store to SHIELD_CTRL are cut from the waveform
+   24 cycles starting at its first store to SHIELD_CTRL are cut from the waveform
    (VCD) with scripts/vcd2wave.py. They show: the lock store, the attacker's store
-   to the locked SHIELD_CTRL being ignored, a call (push), a MUL stall, the return
-   (pop), the stack overwrite, and the bad return trapped to the handler.
+   to the locked SHIELD_CTRL being ignored, the read-back, a branch not taken, a call
+   (push), a MUL stall, the return (pop), a taken branch, the stack overwrite, the
+   bad return trapped (fault registers, violation count) and the security handler
+   starting.
 
 The .png copies are made with Microsoft Edge in headless mode (if installed),
 for slides and the report.
@@ -265,7 +267,11 @@ stall          | soc_tb.dut.u_core.stall                         | bit
 flush          | soc_tb.dut.u_core.flush_ifid                    | bit
 m_busy         | soc_tb.dut.u_core.m_busy                        | bit
 bus we         | soc_tb.dut.u_core.bus_we                        | bit
+bus re         | soc_tb.dut.u_core.bus_re                        | bit
 bus addr       | soc_tb.dut.u_core.bus_addr                      | hex
+bus rdata      | soc_tb.dut.u_core.bus_rdata                     | hex
+branch         | soc_tb.dut.u_core.tr_branch                     | bit
+mispredict     | soc_tb.dut.u_core.tr_mispredict                 | bit
 SHIELD_CTRL    | soc_tb.dut.g_shield.u_sh.ctrl                   | hex
 locked         | soc_tb.dut.g_shield.u_sh.locked                 | bit
 push           | soc_tb.dut.g_shield.u_sh.do_push                | bit
@@ -275,6 +281,9 @@ ss top         | soc_tb.dut.g_shield.u_sh.top                    | hex
 ex_target      | soc_tb.dut.u_core.br_target                     | hex
 mismatch       | soc_tb.dut.g_shield.u_sh.mismatch               | bit
 trap           | soc_tb.dut.u_core.sh_trap                       | bit
+fault pc       | soc_tb.dut.g_shield.u_sh.fault_pc               | hex
+fault actual   | soc_tb.dut.g_shield.u_sh.f_actual               | hex
+violations     | soc_tb.dut.g_shield.u_sh.f_count                | dec
 """
 
 
@@ -284,12 +293,12 @@ def timing():
     simulator = os.environ.get("SIM") or sim.default_sim()
     prog = "timing_final"
     _, syms = build_sw.build(prog, os.path.join(sim.BUILD, "sw"))
-    # run 1: find the window: 12 cycles starting with the first store to SHIELD_CTRL in EX
+    # run 1: find the window: 24 cycles starting with the first store to SHIELD_CTRL in EX
     result, text = run_prog.run_one(prog, 1, simulator, quiet=True, extra=["trigger_waddr=10000030"])
     if not result.startswith("RESULT: EXIT 3"):
         raise SystemExit(f"{prog} did not end in the trap handler: {result}")
     first = int(re.search(r"WTRIGGER cycle=(\d+)", text).group(1))
-    start, cycles = first - 1, 12
+    start, cycles = first - 1, 24
     # run 2: dump the waveform of that window only
     vcd = os.path.join(sim.BUILD, simulator, "soc_tb", "timing_final.vcd").replace("\\", "/")
     run_prog.run_one(prog, 1, simulator, quiet=True, extra=[f"vcd={vcd}", f"vcd_from={start}", f"vcd_len={cycles + 5}"])
@@ -300,7 +309,7 @@ def timing():
     subprocess.run([sys.executable, os.path.join(sim.ROOT, "scripts", "vcd2wave.py"), vcd, "--signals", sig,
                     "--from", "0", "--cycles", str(cycles), "--first-cycle-label", str(start),
                     "--dis", os.path.join(sim.BUILD, "sw", prog, prog + ".dis"),
-                    "--title", "ShieldV in 12 cycles (timing_final.S, in-order, SW0=1): lock, ignored write, call, MUL, return, overwrite, trap",
+                    "--title", "ShieldV in 24 cycles (timing_final.S, in-order, SW0=1): lock, ignored write, read-back, branches, call, MUL, return, overwrite, trap, handler",
                     "--out", tmp], check=True)
     svg = os.path.join(OUT, "timing_diagram.svg")
     shutil.copyfile(tmp + ".svg", svg)

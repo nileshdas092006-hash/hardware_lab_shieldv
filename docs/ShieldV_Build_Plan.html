@@ -365,7 +365,7 @@ output retire, branch, mispredict   // branch/mispredict added Oct 11</pre>
   <div class="sec-head">
     <div class="eyebrow">Know the answer before the AI writes the code</div>
     <h2>What correct looks like</h2>
-    <p><b>This picture is a hand-drawn prediction</b>, made before the RTL existed, to practise reading timing. The real one, cut from simulation of the actual Verilog (lock, ignored write, call, MUL stall, return, overflow and trap in 12 cycles), is <code>diagrams/timing_diagram.svg</code>. This is the attack caught cycle by cycle in your 3-stage pipeline. <code>victim()</code> is called from 0x100, its store overflows the saved return address with 0x300 (the <code>hacked()</code> function), and the return is caught in EX at cycle 8. If you can predict a picture like this before simulating, you can catch AI mistakes.</p>
+    <p><b>This picture is a hand-drawn prediction</b>, made before the RTL existed, to practise reading timing. The real one, cut from simulation of the actual Verilog (lock, ignored write, read-back, branches, call, MUL stall, return, overflow, trap and the handler starting, in 24 cycles), is <code>diagrams/timing_diagram.svg</code>. This is the attack caught cycle by cycle in your 3-stage pipeline. <code>victim()</code> is called from 0x100, its store overflows the saved return address with 0x300 (the <code>hacked()</code> function), and the return is caught in EX at cycle 8. If you can predict a picture like this before simulating, you can catch AI mistakes.</p>
   </div>
   <div class="scroll"><svg id="wave" viewBox="0 0 900 440" role="img" aria-label="Timing diagram of a caught return-address attack"></svg></div>
   <div class="two">
@@ -562,7 +562,7 @@ Explain every design choice in one plain sentence.</pre>
     <thead><tr><th>Component</th><th>Marks</th><th>Evidence ShieldV produces</th><th>Ready by</th></tr></thead>
     <tbody>
       <tr><td>Block diagram</td><td class="num">1.0</td><td><code>diagrams/top_block_diagram.svg</code>: the whole system with every sub-block, signal names and widths checked against the Verilog</td><td class="num">Oct 11</td></tr>
-      <tr><td>Timing diagram</td><td class="num">1.5</td><td>One 12-cycle timing diagram of the whole project cut from a real simulation VCD (lock, ignored write, call, MUL stall, return, overflow, trap); ILA capture on the board still to do</td><td class="num">Oct 11 sim · Nov 1 board</td></tr>
+      <tr><td>Timing diagram</td><td class="num">1.5</td><td>One 24-cycle timing diagram of the whole project cut from a real simulation VCD (lock, ignored write, read-back, branches, call, MUL stall, return, overflow, trap, handler start); ILA capture on the board still to do</td><td class="num">Oct 11 sim · Nov 1 board</td></tr>
       <tr><td>Design</td><td class="num">1.0</td><td>Interface contracts, decision log, FSM diagrams for the divider, UART and violation FSM</td><td class="num">Oct 11</td></tr>
       <tr><td>Validation</td><td class="num">1.0</td><td>37 unit testbenches, riscv-tests on both cores, random programs vs a golden model on both cores, workloads, attack / lock / canary matrix, shield replay, CI history; formal proofs planned</td><td class="num">Nov 1</td></tr>
       <tr><td>Demo video</td><td class="num">1.0</td><td>4 minutes: 30 s problem, 60 s architecture, 100 s live switch-off/switch-on demo, 50 s results</td><td class="num">Nov 5</td></tr>

@@ -72,7 +72,7 @@ SHIELD_CTRL and SHIELD_HANDLER until reset, and SHIELD_STAT bit 30 reads 1. With
 same memory-write bug that overwrites a return address could first store 0 to SHIELD_CTRL.
 `shield_ctrl_tb.v` makes 1,001 writes after the lock and checks nothing changes;
 `sw/attack/lock.c` is the demo (built twice: `lock` traps, `lock_off` is hijacked).
-The lock shows up in the final timing diagram `diagrams/timing_diagram.svg` (program `sw/workloads/timing_final.S`, 12 cycles).
+The lock shows up in the final timing diagram `diagrams/timing_diagram.svg` (program `sw/workloads/timing_final.S`, 24 cycles).
 
 Also new: `sw/attack/attack_skip.c` (an overwrite that steps over a stack canary), a fault
 viewer on the board after a trap (SW15..14 choose PC / expected / actual on the display),
