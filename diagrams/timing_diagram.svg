@@ -1,3 +1,4 @@
+<!-- Timing Diagram: G1 Pipeline & ShieldV (Laxmidhar Mohapatra) -->
 <svg xmlns="http://www.w3.org/2000/svg" width="1906" height="810" font-family="monospace" font-size="11">
 <rect width="1906" height="810" fill="white"/>
 <text x="10" y="20" font-size="14" font-weight="bold">ShieldV in 24 cycles (timing_final.S, in-order, SW0=1): lock, ignored write, read-back, branches, call, MUL, return, overwrite, trap, handler</text>
