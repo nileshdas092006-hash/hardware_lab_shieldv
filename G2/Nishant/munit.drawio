@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" modified="2026-11-03T12:00:00.000Z" agent="OpenAI" version="24.7.17" type="device">
+  <diagram id="g2-nishant-munit" name="M-unit block diagram">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="G2 Nishant — RV32M M-unit (B1 + B2 + B3)" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;strokeColor=none;fillColor=none;fontColor=#172554;fontSize=26;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="25" width="1250" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Core-facing IF-1 handshake: pulse start with op/a/b → wait while busy → capture result when done is asserted" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontColor=#475569;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="42" y="73" width="1400" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="inputs" value="&lt;b&gt;Core / SoC inputs&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;clk&lt;/b&gt; — clock&lt;br&gt;&lt;b&gt;rst_n&lt;/b&gt; — active-low reset&lt;br&gt;&lt;b&gt;start&lt;/b&gt; — operation request&lt;br&gt;&lt;b&gt;op[2:0]&lt;/b&gt; — RV32M operation&lt;br&gt;&lt;b&gt;a[31:0]&lt;/b&gt; — operand A&lt;br&gt;&lt;b&gt;b[31:0]&lt;/b&gt; — operand B" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1F5F9;strokeColor=#64748B;fontColor=#0F172A;fontSize=15;align=left;verticalAlign=middle;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="45" y="330" width="245" height="275" as="geometry" />
+        </mxCell>
+        <mxCell id="dispatch" value="&lt;b&gt;Operation dispatch&lt;/b&gt;&lt;br&gt;&lt;br&gt;Use &lt;b&gt;op[2]&lt;/b&gt; to select unit&lt;br&gt;&lt;br&gt;&lt;b&gt;op[2] = 0&lt;/b&gt; → multiplier&lt;br&gt;&lt;b&gt;op[2] = 1&lt;/b&gt; → divider&lt;br&gt;&lt;br&gt;Pass &lt;b&gt;op[1:0]&lt;/b&gt; to selected unit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#D97706;fontColor=#78350F;fontSize=14;align=center;verticalAlign=middle;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="355" y="365" width="260" height="205" as="geometry" />
+        </mxCell>
+        <mxCell id="mul" value="&lt;b&gt;B1 — MULTIPLIER&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Input control:&lt;/b&gt; start &amp;amp; ~op[2]&lt;br&gt;&lt;b&gt;Operation:&lt;/b&gt; op[1:0]&lt;br&gt;&lt;br&gt;• Extend each operand to 33 bits&lt;br&gt;• Signed input: copy sign bit&lt;br&gt;• Unsigned input: extend with 0&lt;br&gt;• One signed 33 × 33 multiply&lt;br&gt;• MUL selects product[31:0]&lt;br&gt;• MULH / MULHSU / MULHU select product[63:32]&lt;br&gt;&lt;br&gt;&lt;b&gt;Measured test latency: 2 cycles&lt;/b&gt;&lt;br&gt;&lt;b&gt;FPGA mapping: 4 DSP48E1&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;fontColor=#1E3A8A;fontSize=14;align=left;verticalAlign=middle;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="690" y="155" width="420" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="div" value="&lt;b&gt;B2 — DIVIDER&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Input control:&lt;/b&gt; start &amp;amp; op[2]&lt;br&gt;&lt;b&gt;Operation:&lt;/b&gt; op[1:0]&lt;br&gt;&lt;br&gt;• Convert signed operands to magnitudes&lt;br&gt;• 32 restoring-division iterations&lt;br&gt;• Shift remainder and bring down dividend bit&lt;br&gt;• Try divisor subtraction; keep or restore&lt;br&gt;• Apply quotient / remainder sign correction&lt;br&gt;• Handle divide-by-zero and INT_MIN / −1 cases&lt;br&gt;&lt;br&gt;&lt;b&gt;Measured test latency: 34 cycles&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEDD5;strokeColor=#EA580C;fontColor=#7C2D12;fontSize=14;align=left;verticalAlign=middle;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="690" y="555" width="420" height="330" as="geometry" />
+        </mxCell>
+        <mxCell id="aggregate" value="&lt;b&gt;B3 — HANDSHAKE AGGREGATION&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;busy&lt;/b&gt; = mul_busy OR div_busy&lt;br&gt;&lt;b&gt;done&lt;/b&gt; = mul_done OR div_done&lt;br&gt;&lt;br&gt;&lt;b&gt;Result selection&lt;/b&gt;&lt;br&gt;div_done ? div_res : mul_res&lt;br&gt;&lt;br&gt;Core sees one common interface; it does not need to know which unit is active." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;fontColor=#14532D;fontSize=14;align=left;verticalAlign=middle;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="355" width="330" height="235" as="geometry" />
+        </mxCell>
+        <mxCell id="outputs" value="&lt;b&gt;Core / SoC outputs&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;busy&lt;/b&gt;&lt;br&gt;&lt;b&gt;done&lt;/b&gt;&lt;br&gt;&lt;b&gt;result[31:0]&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1F5F9;strokeColor=#64748B;fontColor=#0F172A;fontSize=15;align=left;verticalAlign=middle;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="675" width="330" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="mulops" value="&lt;b&gt;Multiplier op map (op[1:0])&lt;/b&gt;&lt;br&gt;00 MUL — low product&lt;br&gt;01 MULH — signed × signed&lt;br&gt;10 MULHSU — signed × unsigned&lt;br&gt;11 MULHU — unsigned × unsigned" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#94A3B8;fontColor=#334155;fontSize=13;align=left;verticalAlign=middle;spacing=10;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="45" y="155" width="500" height="135" as="geometry" />
+        </mxCell>
+        <mxCell id="divops" value="&lt;b&gt;Divider op map (op[1:0])&lt;/b&gt;&lt;br&gt;00 DIV — signed quotient&lt;br&gt;01 DIVU — unsigned quotient&lt;br&gt;10 REM — signed remainder&lt;br&gt;11 REMU — unsigned remainder" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#94A3B8;fontColor=#334155;fontSize=13;align=left;verticalAlign=middle;spacing=10;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="45" y="690" width="500" height="135" as="geometry" />
+        </mxCell>
+        <mxCell id="spec" value="&lt;b&gt;RISC-V special results&lt;/b&gt;&lt;br&gt;&lt;br&gt;• x / 0 → quotient = 0xFFFF_FFFF; remainder = x&lt;br&gt;• INT_MIN / −1 → quotient = INT_MIN; remainder = 0&lt;br&gt;&lt;br&gt;These are defined results, not arithmetic traps." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#94A3B8;fontColor=#334155;fontSize=13;align=left;verticalAlign=middle;spacing=10;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="690" y="930" width="830" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" value="start, op[2]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#475569;strokeWidth=2;endArrow=block;endFill=1;fontSize=12;fontColor=#334155;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="inputs" target="dispatch">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="clk, rst_n, a, b" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2563EB;strokeWidth=2;endArrow=block;endFill=1;fontSize=12;fontColor=#1E40AF;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="inputs" target="mul">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="clk, rst_n, a, b" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#EA580C;strokeWidth=2;endArrow=block;endFill=1;fontSize=12;fontColor=#9A3412;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="inputs" target="div">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="start &amp; ~op[2], op[1:0]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2563EB;strokeWidth=2;endArrow=block;endFill=1;fontSize=12;fontColor=#1E40AF;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="dispatch" target="mul">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="start &amp; op[2], op[1:0]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#EA580C;strokeWidth=2;endArrow=block;endFill=1;fontSize=12;fontColor=#9A3412;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="dispatch" target="div">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" value="mul_busy, mul_done, mul_res" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2563EB;strokeWidth=2;endArrow=block;endFill=1;fontSize=12;fontColor=#1E40AF;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="mul" target="aggregate">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" value="div_busy, div_done, div_res" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#EA580C;strokeWidth=2;endArrow=block;endFill=1;fontSize=12;fontColor=#9A3412;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="div" target="aggregate">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" value="busy, done, result" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#475569;strokeWidth=2;endArrow=block;endFill=1;fontSize=12;fontColor=#334155;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="aggregate" target="outputs">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
