@@ -1,3 +1,4 @@
+# Owner: Laxmidhar (G1) - RV32IM Instruction Set Simulator
 #!/usr/bin/env python3
 """rv32im_iss.py - golden model: a tiny RV32IM instruction-set simulator (Laxmidhar, G1).
 
