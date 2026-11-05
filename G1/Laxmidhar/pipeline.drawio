@@ -1,0 +1,125 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="pipeline_control" name="G1 3-Stage Pipeline & Control">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="G1 3-Stage Pipelined RV32IM Core &amp; Control Architecture (Laxmidhar Mohapatra)" style="text;html=1;fontStyle=1;fontSize=18;align=center;" vertex="1" parent="1">
+          <mxGeometry x="150" y="20" width="800" height="40" as="geometry" />
+        </mxCell>
+        <!-- Pipeline Stage Headers -->
+        <mxCell id="hdr_if" value="FETCH (IF)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="80" y="80" width="220" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="hdr_ex" value="EXECUTE / DECODE (EX)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="380" y="80" width="340" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="hdr_wb" value="WRITEBACK / MEM (WB)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="800" y="80" width="220" height="40" as="geometry" />
+        </mxCell>
+        <!-- Fetch Stage Elements -->
+        <mxCell id="pc_mux" value="PC MUX&#xa;[Next / Branch / Trap]" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;rotation=90;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="240" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="pc_reg" value="PC Register&#xa;(pc_reg.v)&#xa;[Hold / Trap / Redir]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="130" y="235" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="imem" value="Instruction RAM&#xa;(imem.v)&#xa;16 KB" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="250" y="235" width="90" height="60" as="geometry" />
+        </mxCell>
+        <!-- Stage Register 1: IF/ID to EX -->
+        <mxCell id="pipe_ifid" value="IF/ID -> EX&#xa;Pipeline Reg&#xa;(pipe_ifid_ex.v)&#xa;[Valid / Stall / Flush]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="160" width="60" height="300" as="geometry" />
+        </mxCell>
+        <!-- Execute Stage Elements -->
+        <mxCell id="regfile" value="Register File&#xa;(regfile.v)&#xa;32 x 32-bit (x0=0)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="450" y="160" width="100" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="decoder" value="Decoder &amp; Imm&#xa;(decoder.v, imm_gen.v)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="450" y="250" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="fwd_mux_a" value="FWD MUX A" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;rotation=90;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="545" y="160" width="70" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="fwd_mux_b" value="FWD MUX B" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;rotation=90;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="545" y="230" width="70" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="alu" value="ALU&#xa;(alu.v)&#xa;RV32I Arith/Logic" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="610" y="175" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="m_unit" value="M-Unit&#xa;(mul_div.v)&#xa;Multi-Cycle" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="615" y="255" width="90" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="branch_unit" value="Branch Unit&#xa;(branch_unit.v)&#xa;Targets &amp; Compares" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="615" y="325" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="lsu" value="LSU (A12)&#xa;(lsu.v)&#xa;Byte/Half Alignment" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="615" y="395" width="100" height="50" as="geometry" />
+        </mxCell>
+        <!-- Stage Register 2: EX to MEM/WB -->
+        <mxCell id="pipe_exwb" value="EX -> MEM/WB&#xa;Pipeline Reg&#xa;(pipe_ex_wb.v)&#xa;[Valid / Stall / Flush]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="750" y="160" width="60" height="300" as="geometry" />
+        </mxCell>
+        <!-- Writeback / MEM Stage Elements -->
+        <mxCell id="dmem" value="Data RAM&#xa;(dmem.v)&#xa;16 KB Byte-Writable" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="840" y="340" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="wb_mux" value="Writeback MUX&#xa;(wb_mux.v)&#xa;ALU / MEM / PC+4 / M" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;rotation=-90;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="850" y="210" width="140" height="60" as="geometry" />
+        </mxCell>
+        <!-- Pipeline Control Units (Laxmidhar's Core Blocks) -->
+        <mxCell id="fwd_unit" value="Forwarding Unit&#xa;(forward_unit.v)&#xa;EX/WB Hazard Detection" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="470" y="520" width="150" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="hazard_unit" value="Hazard &amp; Stall Unit&#xa;(hazard_unit.v)&#xa;M-Busy &amp; Freeze Control" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="270" y="520" width="160" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="flush_unit" value="Flush Unit&#xa;(flush_unit.v)&#xa;Branch &amp; Trap Squashing" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="90" y="520" width="150" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="trace_port" value="Trace Port (IF-4)&#xa;(trace_port.v)&#xa;Call/Ret/Branch Snoop" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="660" y="520" width="150" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="shieldv" value="ShieldV Security Module&#xa;(G3 Shadow Stack &amp; Alarm)&#xa;Mismatch / Trap / Freeze" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="850" y="520" width="180" height="70" as="geometry" />
+        </mxCell>
+        <!-- Connections & Control Paths -->
+        <mxCell id="c_fwd" value="Forward Data (wb_data)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#b85450;strokeWidth=2;" edge="1" parent="1" source="wb_mux" target="fwd_mux_a">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="930" y="140" />
+              <mxPoint x="580" y="140" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c_stall" value="stall" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#b85450;strokeWidth=2;dashed=1;" edge="1" parent="1" source="hazard_unit" target="pc_reg">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="200" y="555" />
+              <mxPoint x="200" y="320" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c_flush" value="flush" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#b85450;strokeWidth=2;dashed=1;" edge="1" parent="1" source="flush_unit" target="pipe_ifid">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="160" y="490" />
+              <mxPoint x="380" y="490" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c_trace" value="is_call / is_ret / target" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6c8ebf;strokeWidth=2;" edge="1" parent="1" source="trace_port" target="shieldv">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c_trap" value="sh_trap / freeze" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#b85450;strokeWidth=2;" edge="1" parent="1" source="shieldv" target="hazard_unit">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="940" y="620" />
+              <mxPoint x="350" y="620" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
