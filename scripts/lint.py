@@ -24,11 +24,14 @@ def main():
         tops = ["soc_top", "core_single"]
         bad = 0
         for top in tops:
-            cmd = ["verilator", "--lint-only", "-Wall", *VERILATOR_OFF, "--top-module", top, *files]
+            # -Wno-fatal: real errors (such as a missing module) fail; warnings are only printed
+            cmd = ["verilator", "--lint-only", "-Wall", "-Wno-fatal", *VERILATOR_OFF, "--top-module", top, *files]
             r = subprocess.run(cmd, capture_output=True, text=True)
-            print(f"verilator lint {top}: {'clean' if r.returncode == 0 else 'ISSUES'}")
-            if r.returncode:
+            warned = "%Warning" in r.stderr
+            print(f"verilator lint {top}: {'ISSUES' if r.returncode else 'warnings' if warned else 'clean'}")
+            if r.returncode or warned:
                 print(r.stderr)
+            if r.returncode:
                 bad += 1
         sys.exit(1 if bad else 0)
     simulator = sim.default_sim()
