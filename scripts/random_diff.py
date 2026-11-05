@@ -1,3 +1,4 @@
+# Owner: Laxmidhar (G1) - Random Differential Testing Framework
 #!/usr/bin/env python3
 """random_diff.py - random programs, checked instruction by instruction (Laxmidhar, G1).
 

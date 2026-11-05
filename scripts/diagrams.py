@@ -1,3 +1,4 @@
+# Diagrams & Timing Analysis: Laxmidhar (G1)
 #!/usr/bin/env python3
 """diagrams.py - the project's two diagrams (Nilesh, G2; drawn from everyone's RTL).
 

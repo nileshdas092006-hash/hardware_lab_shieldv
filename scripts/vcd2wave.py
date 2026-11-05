@@ -1,3 +1,4 @@
+# Owner: Laxmidhar (G1) - VCD to WaveDrom/SVG converter
 #!/usr/bin/env python3
 """vcd2wave.py - turn a window of a simulation VCD into a timing diagram.
 
