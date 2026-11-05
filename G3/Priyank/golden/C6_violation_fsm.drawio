@@ -1,0 +1,52 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="violfsm" name="C6 violation FSM">
+    <mxGraphModel dx="900" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="900" pageHeight="620" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="C6 violation_fsm.v: what ShieldV does when a check fails" style="text;html=1;fontStyle=1;fontSize=16;align=center;" vertex="1" parent="1">
+          <mxGeometry x="150" y="10" width="600" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="normal" value="NORMAL&lt;br&gt;checking every return&lt;br&gt;capture = violation" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="120" y="200" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="alarm" value="ALARM&lt;br&gt;freeze = 1 (CPU stopped)&lt;br&gt;alarm = 1: red LED, fault PC on 7-seg" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="580" y="200" width="220" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" value="act &amp;amp;&amp;amp; !trap_mode&lt;br&gt;freeze = 1 in the SAME cycle (combinational)" style="endArrow=classic;html=1;fontSize=11;" edge="1" parent="1" source="normal" target="alarm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="stays until reset" style="edgeStyle=orthogonalEdgeStyle;curved=1;endArrow=classic;html=1;fontSize=11;" edge="1" parent="1" source="alarm" target="alarm">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="660" y="150" />
+              <mxPoint x="720" y="150" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" value="no violation, or protection off,&lt;br&gt;or count-only (only counted)" style="edgeStyle=orthogonalEdgeStyle;curved=1;endArrow=classic;html=1;fontSize=11;" edge="1" parent="1" source="normal" target="normal">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="60" y="230" />
+              <mxPoint x="60" y="290" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" value="act &amp;amp;&amp;amp; trap_mode&lt;br&gt;trap = 1 for one cycle: PC goes to the handler,&lt;br&gt;the bad return is killed, state stays NORMAL" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;html=1;fontSize=11;" edge="1" parent="1" source="normal" target="normal">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="220" y="400" />
+              <mxPoint x="300" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="eq" value="act = violation &amp;amp; enabled &amp;amp; ~count_only&lt;br&gt;freeze = (state == ALARM) | (act &amp;amp; ~trap_mode)&lt;br&gt;trap = (state == NORMAL) &amp;amp; act &amp;amp; trap_mode&lt;br&gt;capture = (state == NORMAL) &amp;amp; violation   (fault registers latch even when off or count-only)&lt;br&gt;reset -&amp;gt; NORMAL" style="text;html=1;fontSize=12;align=left;whiteSpace=wrap;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="120" y="450" width="700" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="note" value="Draft drawn with Claude (AI) from rtl/violation_fsm.v, 27 Oct 2026. Priyank to check and redraw if needed." style="text;html=1;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="120" y="570" width="700" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
