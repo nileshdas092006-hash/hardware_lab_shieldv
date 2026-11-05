@@ -33,6 +33,7 @@ void __attribute__((noinline)) victim(u32 target) {
 }
 
 int main(void) {
+    SHIELD_CTRL = SHIELD_CTRL | SHIELD_LOCK;   // lock at boot: nothing can switch ShieldV off now
     uart_puts("ShieldV attack_skip demo (non-linear overwrite)\r\n");
     victim((u32)&hacked);
     uart_puts("victim returned normally (attack missed)\r\n");

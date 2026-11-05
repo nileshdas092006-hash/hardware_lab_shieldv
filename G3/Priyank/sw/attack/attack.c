@@ -46,6 +46,7 @@ static u32 payload[PAYLOAD_WORDS];
 
 int main(void) {
     u32 sw = read_switches();
+    SHIELD_CTRL = SHIELD_CTRL | SHIELD_LOCK;   // lock at boot: nothing can switch ShieldV off now
     uart_puts("ShieldV attack demo. Protection is ");
     uart_puts((sw & 1u) ? "ON\r\n" : "OFF\r\n");
 
