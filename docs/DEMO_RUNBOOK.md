@@ -24,6 +24,73 @@ which core is running. **If it shows the wrong core, stop and load the other bit
 
 ---
 
+## Start here: the demo menu
+
+One command gives you every function of the project:
+
+```powershell
+cd C:\Dev\hardware_lab_shieldv
+python scripts/demo.py
+```
+
+Type a number to run that item. Type `c` to switch core; the top line always shows which core
+is selected, and it starts on out-of-order. Each item shows the real command, a sentence you
+can say, the output, and then `[AS EXPECTED]` or `[NOT AS EXPECTED]`.
+
+To answer a question from an examiner, find the row and type its number:
+
+| They ask about | Menu item |
+|---|---|
+| The attack, on and off | 1, 2 |
+| What happens after a catch, the security report | 3 |
+| Can an attacker switch ShieldV off? | 4, 5 |
+| Function pointers, landing pads | 6 |
+| Deep recursion, shadow stack limit | 7, 8 |
+| Why not use stack canaries? | 9, 10, 11, then 12 for the full table |
+| Does it run normal programs? | 13, 14 |
+| Is the CPU correct? | 15, 16, 17 |
+| One team member's modules | 18 to 22 (all of them: 23) |
+| How big is it, does it meet timing? | 25 |
+| Show it in Vivado | 29, then Part 2 below |
+| Show the design | 30, 31 |
+
+## Presenting order
+
+**Before the audience arrives**
+
+1. Plug in the board and switch it on. Close any old PuTTY and Hardware Manager windows.
+2. Open PowerShell and run `python scripts/demo.py`.
+3. Run item 24. Both bitstreams must be listed, with no `RTL CHANGED` warning.
+4. Run items 1 and 2 once. The first run compiles the design, so it is slower than later runs.
+
+**During the demo.** Start in the out-of-order core; the board steps need the board in view.
+
+| # | Show | Menu | Point to make |
+|---|---|---|---|
+| 1 | The design | 30 | The core, ShieldV beside it, and the shadow stack nothing on the data bus can reach |
+| 2 | Attack in simulation | 1, then 2 | Same program, and only the switch differs |
+| 3 | Load the real chip | 26, then 27 | The file is picked from the selected core |
+| 4 | Attack on the board | 28, then SW0 down and up | Press CPU_RESET each time. `Core: out-of-order`, HACKED, then the red LED and `000007B8` |
+| 5 | Stronger features | 3, 4, 5, 6 | Report, lock bit, landing pads |
+| 6 | Versus canaries | 10, 11 | Canaries miss this attack, ShieldV does not |
+| 7 | It is a correct CPU | 15, 17 | Matches the golden model; official tests pass |
+| 8 | Its cost | 25 | Small, and 50 MHz met |
+| 9 | In Vivado (if asked) | 29 | Show the title bar and the Tcl Console |
+
+**Then the in-order core.** Close PuTTY so the port is free, type `c` (the top line now says
+IN-ORDER), and repeat rows 2, 3, 4 and 8. Rows 5 to 7 give the same results, so run them only if asked.
+The terminal must now say `Core: in-order`.
+
+**Three traps**
+
+- Only one window can hold the COM port. If PuTTY shows an error, close the older PuTTY window.
+- Item 12 rewrites `docs/results/canary_vs_shieldv*.md`. Run `git status` afterwards, and use
+  `git restore` on those files if you do not want the change.
+- `fpga.py build <program>` writes to the same folder as the attack bitstream, so building `fib`
+  replaces it. Rebuild with `build attack` afterwards, which takes about 7 minutes per core.
+
+---
+
 ## Part 0: Prepare, the day before (about 30 minutes)
 
 ```powershell
@@ -96,10 +163,10 @@ How to explain the alarm line: `expected` is the real return address ShieldV sav
 
 | Command | Must end with | Time |
 |---|---|---|
-| `python scripts/run_prog.py all --core ooo` | `20/20 program runs as expected` | about 3 min |
+| `python scripts/run_prog.py all --core ooo` | `20/20 program runs as expected` | about 2 min |
 | `python scripts/random_diff.py --workloads --core ooo` | `9/9 C workloads match the golden model on: ooo` | about 1 min |
-| `python scripts/random_diff.py -n 50 --core ooo` | `50/50 random programs match the golden model on: ooo` | about 3 min |
-| `python scripts/riscv_tests.py --core ooo` | `48/48 riscv-tests passed` | about 1 min |
+| `python scripts/random_diff.py -n 50 --core ooo` | `50/50 random programs match the golden model on: ooo` | about 4 min |
+| `python scripts/riscv_tests.py --core ooo` | `48/48 riscv-tests passed` | about 3 min |
 | `python scripts/run_tests.py` (covers both cores) | `37/37 testbenches passed` | about 4 min |
 
 **Read the summary line under the list.** In a terminal holding two runs, a list belongs to
@@ -156,8 +223,8 @@ For a live demo, skip this and show that it was done. The script's bitstream fro
 
 ## Part 3: Out-of-order core on the board
 
-> **Not yet checked:** I had no board. Everything in this part comes from the design and
-> from the earlier run on Nishant's laptop. Rehearse it once before presenting.
+> On this laptop the board was on **COM7** and PuTTY is installed. COM3 to COM6 are
+> Bluetooth, not the board. Menu item 27 finds the port and opens PuTTY for you.
 
 ### 3.1 Connect
 
@@ -166,11 +233,11 @@ For a live demo, skip this and show that it was done. The script's bitstream fro
 3. Open the terminal **before** programming, so you see the first lines.
    Use PuTTY: **Serial**, your `COMx`, speed **115200**.
 
-On a laptop without PuTTY, this PowerShell window does the same job (replace `COM5`, press
+If PuTTY is unavailable, this PowerShell window does the same job (use your port, press
 Ctrl+C to stop, and try the other COM port if nothing appears):
 
 ```powershell
-$p = New-Object System.IO.Ports.SerialPort COM5,115200; $p.Open(); while ($true) { [Console]::Write($p.ReadExisting()); Start-Sleep -Milliseconds 50 }
+$p = New-Object System.IO.Ports.SerialPort COM7,115200; $p.Open(); while ($true) { [Console]::Write($p.ReadExisting()); Start-Sleep -Milliseconds 50 }
 ```
 
 ### 3.2 Load the right bitstream
@@ -262,7 +329,9 @@ in batch mode, not by clicking: BLOCKED with `sw=1` and HIJACKED with `sw=0`, on
 
 **Not checked:**
 
-- Anything on the real board with these bitstreams, including the PowerShell serial window.
-  `fpga.py program --ooo` was only run with no board attached: it picked the right file, then
-  stopped at "no current hw_target" as expected.
+- The PowerShell serial window.
 - The Vivado clicks themselves, and the waveform steps in 2.3.
+
+**On the real board** (Das's laptop, COM7, 2026-11-07): the out-of-order terminal output was
+correct with SW0 down and up, shown in a PuTTY screenshot. Das also reports that the LEDs and
+display matched.
