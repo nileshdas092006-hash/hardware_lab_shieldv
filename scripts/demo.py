@@ -84,6 +84,9 @@ MENU = [
     "PICTURES",
     ("Block diagram", ("open", "diagrams/top_block_diagram.png")),
     ("Timing diagram", ("open", "diagrams/timing_diagram.png")),
+    "ANY FUNCTION, ANY VALUE",
+    ("Choose a function and value: switches, then simulate", ("calc",)),
+    ("Load the calculator bitstream onto the board", script(lambda c: ["scripts/fpga.py", "program", "calc"] + (["--ooo"] if c == "ooo" else []), "programmed", "One bitstream: the switches choose the function and the value.")),
 ]
 ITEMS = [m for m in MENU if not isinstance(m, str)]
 
@@ -216,6 +219,17 @@ def open_file(path):
     return True
 
 
+def run_calc(core):
+    print("")
+    subprocess.run([PY, "scripts/calc.py", "--list"], cwd=sim.ROOT, env=child_env())
+    if state["dry"]:
+        return True
+    name = input("\nFunction name: ").strip().lower()
+    value = input("Value n: ").strip()
+    r = subprocess.run([PY, "scripts/calc.py", name, value, "--core", core], cwd=sim.ROOT, env=child_env())
+    return r.returncode == 0
+
+
 def run_item(n):
     title, action = ITEMS[n - 1]
     core = state["core"]
@@ -231,6 +245,8 @@ def run_item(n):
         return show_board(core)
     if kind == "project":
         return open_project(core)
+    if kind == "calc":
+        return run_calc(core)
     return open_file(action[1])
 
 

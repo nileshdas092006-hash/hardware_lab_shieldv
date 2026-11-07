@@ -8,6 +8,7 @@
     python scripts/fpga.py build --top exerciser_top   # I/O bring-up design, no CPU
     python scripts/fpga.py program               # load the in-order bitstream onto the board
     python scripts/fpga.py program --ooo         # load the out-of-order bitstream onto the board
+    python scripts/fpga.py program calc --ooo    # load another program's bitstream
     python scripts/fpga.py list                  # every bitstream built so far: core, program, timing
     python scripts/fpga.py block shieldv         # size of one module on its own (LUTs, FFs, latches)
     python scripts/fpga.py project attack        # create a clickable Vivado project and open it
@@ -45,7 +46,8 @@ def find_vivado():
 
 def build_tag(args):
     """the folder build.tcl wrote to: build/fpga/<tag>/"""
-    return args.top + ("_ooo" if args.ooo else "") + ("_noshield" if args.no_shield else "")
+    tag = args.top + ("_ooo" if args.ooo else "") + ("_noshield" if args.no_shield else "")
+    return tag + ("_" + args.prog if args.top == "fpga_top" and args.prog != "attack" else "")
 
 
 def list_bitstreams():

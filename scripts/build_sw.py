@@ -36,6 +36,7 @@ PROGRAMS = {
     "deep":        ["workloads/deep.c"],      # 32 return addresses: shadow stack exactly full
     "deep_over":   ["workloads/deep.c"],      # 33: one more than the shadow stack holds
     "timing_final": ["workloads/timing_final.S"],     # the final timing diagram (scripts/diagrams.py)
+    "calc":        ["workloads/calc.c", "workloads/calc_custom.c"],   # switches choose function and value
     "attack":      ["attack/attack.c"],
     "attack_trap": ["attack/attack_trap.c"],
     "lock":        ["attack/lock.c"],

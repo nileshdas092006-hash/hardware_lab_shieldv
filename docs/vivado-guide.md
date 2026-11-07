@@ -186,7 +186,7 @@ The design is lost when the board is switched off; program it again after power-
 `python scripts/fpga.py program --top exerciser_top`. The LEDs copy the switches, the
 display counts up, and the terminal prints `SHIELDV OK` twice a second.
 
-**Other programs:** `python scripts/fpga.py build fib`, then program. The display shows
+**Other programs:** `python scripts/fpga.py build fib`, then `python scripts/fpga.py program fib`. The display shows
 the result in hex (`00000A18` = 2584) and LD0–LD7 light for PASS; the terminal prints
 PASS, cycles and CPI.
 

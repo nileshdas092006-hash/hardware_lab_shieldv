@@ -11,7 +11,7 @@
 #   ooo       build the SoC with the out-of-order core (define SHIELDV_OOO)
 #   noshield  replace ShieldV by shieldv_stub.v, to measure what ShieldV costs
 #
-# Output in build/fpga/<top>[_ooo][_noshield]/:
+# Output in build/fpga/<top>[_ooo][_noshield][_<prog, unless attack>]/:
 #   <top>.bit              the bitstream to load onto the board
 #   utilization.rpt        LUTs, flip-flops, BRAM, DSP for the whole design
 #   utilization_hier.rpt   the same, per module (ShieldV's own LUT count)
@@ -32,6 +32,8 @@ set root [file normalize [file join [file dirname [info script]] .. .. ..]]
 set tag  $top
 if {$ooo}      { append tag _ooo }
 if {$noshield} { append tag _noshield }
+# attack keeps the plain name; any other program gets its own folder
+if {$top eq "fpga_top" && $prog ne "attack"} { append tag _$prog }
 set out  [file join $root build fpga $tag]
 file mkdir $out
 set_part xc7a100tcsg324-1

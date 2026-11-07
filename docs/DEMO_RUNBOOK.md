@@ -53,6 +53,7 @@ To answer a question from an examiner, find the row and type its number:
 | How big is it, does it meet timing? | 25 |
 | Show it in Vivado | 29, then Part 2 below |
 | Show the design | 30, 31 |
+| Run this function with this value, on the board | 32 for the switches, 33 to load (next section) |
 
 ## Presenting order
 
@@ -86,8 +87,89 @@ The terminal must now say `Core: in-order`.
 - Only one window can hold the COM port. If PuTTY shows an error, close the older PuTTY window.
 - Item 12 rewrites `docs/results/canary_vs_shieldv*.md`. Run `git status` afterwards, and use
   `git restore` on those files if you do not want the change.
-- `fpga.py build <program>` writes to the same folder as the attack bitstream, so building `fib`
-  replaces it. Rebuild with `build attack` afterwards, which takes about 7 minutes per core.
+- The attack bitstream and the calculator bitstream are different files. To go back to the attack
+  demo after the calculator, run item 26 again.
+
+---
+
+## Any function, any value: the calculator bitstream
+
+Use this when the professor says "run fib of 12" or "now factorial of 5". It is one bitstream
+with no rebuild: the **switches choose the function and the value**, and CPU_RESET runs it. The
+board has no keyboard path into the CPU, because its UART only sends, so the switches are the input.
+
+| Switches | Meaning |
+|---|---|
+| SW15, SW14, SW13 | Which function (table below) |
+| SW12 to SW1 | The value n, in binary |
+| SW0 | ShieldV: up = on, down = off |
+
+| Number | SW15 SW14 SW13 | Function | n up to | The answer is |
+|---|---|---|---|---|
+| 0 | 0 0 0 | `fib` | 47 | The n-th Fibonacci number (recursive) |
+| 1 | 0 0 1 | `fact` | 12 | n factorial (recursive) |
+| 2 | 0 1 0 | `qsort` | 256 | Quicksort n numbers; a checksum of the sorted list |
+| 3 | 0 1 1 | `bintree` | 256 | Search tree of n keys; a checksum of the in-order walk |
+| 4 | 1 0 0 | `matmul` | 12 | Multiply two n x n matrices; a checksum of the product |
+| 5 | 1 0 1 | `primes` | 4095 | How many primes are below n |
+| 6 | 1 1 0 | `nest` | 400 | Nests n calls, to show the shadow stack limit |
+| 7 | 1 1 1 | `custom` | 4095 | Your own function (default: 1 + 2 + ... + n) |
+
+If n is above the limit, the program says so and uses the limit. 47 and 12 are where the
+answer stops fitting in 32 bits.
+
+**On the board**
+
+1. In the menu, run item 33. It loads the calculator for the selected core.
+2. Open PuTTY with item 27.
+3. Set the switches and press **CPU_RESET**. The switches are read only at reset.
+4. Read the answer in PuTTY in decimal. The display shows the same number in hex, and LD0 to LD7 light when it finishes.
+
+**Do not work out the binary by hand.** Run item 32, or use this, which prints the switches, the
+answer to expect, and a simulation:
+
+```powershell
+python scripts/calc.py fib 18
+```
+```
+  SW  15 14 13 12 11 10  9  8  7  6  5  4  3  2  1  0
+       0  0  0  0  0  0  0  0  0  0  1  0  0  1  0  1
+      |function| |------------- value ------------| |ShieldV
+
+Expected answer: 2584  (display 00000A18)
+```
+
+Add `--no-sim` to print only the switches.
+
+| Ask | SW15 to SW0 | PuTTY | Display |
+|---|---|---|---|
+| `fib 18` | `000 000000010010 1` | `answer = 2584` | `00000A18` |
+| `fact 5` | `001 000000000101 1` | `answer = 120` | `00000078` |
+| `primes 1000` | `101 001111101000 1` | `answer = 168` | `000000A8` |
+| `nest 31` with ShieldV on | `110 000000011111 1` | stops after `nest(31) ...` | red LD17, `00000A0C` |
+
+**The limit of 31 nested calls, and how to explain it.** With SW0 up, `fib` works up to 31, and
+`nest` up to 30, because `nest` uses one more call level. Above that, the 32-entry shadow stack
+is full, so ShieldV stops the core with the red LED on. That is the design's safe choice, not a
+crash. Put SW0 down and press CPU_RESET to show that the same value then runs.
+
+**How long it takes on the board** (50 MHz): `fib 31` took 67 million cycles in simulation, which
+is about 1.3 seconds. Each +1 on n takes about 1.6 times as long, so with SW0 down expect about 9 seconds
+for `fib 35`, under 2 minutes for `fib 40`, and most of an hour for `fib 47`. These are
+estimates. Do not offer values above 40.
+
+**A function that is not in the table.** The professor's new function goes in
+`G3/Priyank/sw/workloads/calc_custom.c`, as number 7:
+
+```powershell
+python scripts/calc.py custom 10
+python scripts/fpga.py build calc --ooo
+python scripts/fpga.py program calc --ooo
+```
+
+The first command tries it in simulation in about 10 seconds, so show that straight away. The
+build takes about 7 minutes. Since `custom` has no Python copy, `calc.py` cannot check its
+answer: check it yourself.
 
 ---
 
@@ -104,10 +186,12 @@ Build both bitstreams now, so that you never wait for Vivado during the demo.
 ```powershell
 python scripts/fpga.py build attack --ooo
 python scripts/fpga.py build attack
+python scripts/fpga.py build calc --ooo
+python scripts/fpga.py build calc
 python scripts/fpga.py list
 ```
 
-Each build takes about 7 minutes. `list` must show both, with a positive WNS and no
+Each build takes about 7 minutes. `list` must show all four, with a positive WNS and no
 `RTL CHANGED` warning:
 
 ```
@@ -327,7 +411,15 @@ The first five rows pass on Vivado's simulator. The first four also pass on Icar
 but the random programs were not run on Icarus. Simulation in the Vivado project was checked
 in batch mode, not by clicking: BLOCKED with `sw=1` and HIJACKED with `sw=0`, on both cores.
 
+**Calculator, in simulation, both cores:** 31 function and value pairs with ShieldV on, plus 3 with it
+off, all gave the expected result. Answers match a separate Python copy of each function, and
+that copy gives the team's known answers for `fib 18`, `fact 12`, `qsort 64`, `bintree 31`, `matmul 8` and
+`primes 1000`. `fib 31` passes and `fib 32` stops; `nest 30` passes and `nest 31` stops. Bitstreams built with the
+same WNS as the attack ones.
+
 **Not checked:**
+
+- The calculator on the real board, including how long it really takes.
 
 - The PowerShell serial window.
 - The Vivado clicks themselves, and the waveform steps in 2.3.
