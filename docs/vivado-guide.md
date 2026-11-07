@@ -1,5 +1,8 @@
 # Simulating and running ShieldV in Vivado, step by step
 
+> **For the demo, use [DEMO_RUNBOOK.md](DEMO_RUNBOOK.md).** This guide covers the in-order core only, and
+> some addresses below are out of date: the attack is now caught at `000007B8`, and `hacked()` is at `0x718`.
+
 There are two ways to do everything: **clicking in the Vivado window** (good for learning
 and for looking at waveforms) and **one-line commands** (faster, same result). Both use
 the same files. Commands are typed in PowerShell inside `C:\Dev\hardware_lab_shieldv`.

@@ -37,7 +37,13 @@ module ras #(
     reg [PTR_W-1:0] s_ptr, c_ptr;            // points at the next free slot
     reg [PTR_W:0]   s_cnt, c_cnt;            // entries held (saturates at DEPTH)
 
-    assign top   = s_mem[s_ptr - 1'b1];
+    // Index of the newest entry. It is a named PTR_W-bit wire on purpose: after
+    // 8 nested calls s_ptr wraps to 0, and 0 - 1 must wrap to DEPTH-1. Written
+    // inline as s_mem[s_ptr - 1'b1], some simulators (Icarus 11) work the index
+    // out in 32 bits, get -1, read outside the array and the predicted PC is X.
+    wire [PTR_W-1:0] s_top_i = s_ptr - 1'b1;
+
+    assign top   = s_mem[s_top_i];
     assign empty = (s_cnt == 0);
 
     // next state of the commit copy (restore must include this cycle's commit)
@@ -73,7 +79,7 @@ module ras #(
                 s_ptr <= c_ptr_n; s_cnt <= c_cnt_n;
             end else if (push && pop) begin
                 if (s_cnt == 0) begin s_mem[s_ptr] <= push_addr; s_ptr <= s_ptr + 1'b1; s_cnt <= 1; end
-                else            s_mem[s_ptr - 1'b1] <= push_addr;
+                else            s_mem[s_top_i] <= push_addr;
             end else if (push) begin
                 s_mem[s_ptr] <= push_addr; s_ptr <= s_ptr + 1'b1;
                 if (s_cnt != DEPTH) s_cnt <= s_cnt + 1'b1;

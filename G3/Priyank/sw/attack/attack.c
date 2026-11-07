@@ -49,6 +49,8 @@ int main(void) {
     SHIELD_CTRL = SHIELD_CTRL | SHIELD_LOCK;   // lock at boot: nothing can switch ShieldV off now
     uart_puts("ShieldV attack demo. Protection is ");
     uart_puts((sw & 1u) ? "ON\r\n" : "OFF\r\n");
+    // the hardware says which core this bitstream holds, so the demo can prove it
+    uart_puts(CORE_ID_REG ? "Core: out-of-order\r\n" : "Core: in-order\r\n");
 
     // 1. a normal, well-behaved call: must NOT raise an alarm
     u32 ok_input[BUF_WORDS] = {1, 2, 3, 4};
