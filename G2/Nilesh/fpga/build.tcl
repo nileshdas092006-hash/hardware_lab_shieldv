@@ -16,6 +16,7 @@
 #   utilization.rpt        LUTs, flip-flops, BRAM, DSP for the whole design
 #   utilization_hier.rpt   the same, per module (ShieldV's own LUT count)
 #   timing.rpt             worst negative slack must be >= 0
+#   build_info.txt         which core and program this bitstream holds
 #   debug_probes.ltx       only with "ila"
 
 set top  [lindex $argv 0]
@@ -74,6 +75,15 @@ write_bitstream -force ${top}.bit
 if {$ila} { write_debug_probes -force debug_probes.ltx }
 
 set wns [get_property SLACK [get_timing_paths -max_paths 1 -nworst 1 -setup]]
+
+# what is in this bitstream, read back by:  python scripts/fpga.py list
+set info [open build_info.txt w]
+puts $info "core [expr {$ooo ? {out-of-order} : {in-order}}]"
+puts $info "shieldv [expr {$noshield ? {no} : {yes}}]"
+puts $info "program $prog"
+puts $info "wns_ns $wns"
+close $info
+
 puts "=========================================================="
 puts " bitstream : $out/${top}.bit   (program: $prog, options: $opts)"
 puts " worst negative slack (WNS): $wns ns  [expr {$wns >= 0 ? {timing MET} : {timing FAILED}}]"

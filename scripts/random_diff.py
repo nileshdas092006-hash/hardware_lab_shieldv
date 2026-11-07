@@ -10,7 +10,8 @@
 For each program:
   1. generate random RV32IM assembly (ALU, shifts, lui/auipc, MUL/DIV with
      edge values, loads/stores of every width, forward branches, counted
-     loops, direct and indirect calls to leaf functions)
+     loops, direct and indirect calls to leaf functions, and recursion deeper
+     than the out-of-order core's 8-entry return-address stack)
   2. build it (Spike-comparison build: nothing timing-dependent)
   3. run it on the golden model (scripts/rv32im_iss.py) and on the simulated
      SoC with each core, all writing the same commit-log format
@@ -110,9 +111,12 @@ class Gen:
                 self.emit(f"bnez x31, {top}")
             elif k < 95:                                   # direct call
                 self.emit(f"jal ra, leaf{r.randrange(N_LEAF)}")
-            else:                                          # indirect call (jalr through x31)
+            elif k < 98:                                   # indirect call (jalr through x31)
                 self.emit(f"la x31, leaf{r.randrange(N_LEAF)}")
                 self.emit("jalr ra, 0(x31)")
+            else:                                          # recursion deeper than the 8-entry RAS
+                self.emit(f"li x31, {r.randint(9, 24)}")   # stays under the 32-entry shadow stack
+                self.emit("jal ra, recurse")
         self.emit("lw   ra, 12(sp)")
         self.emit("lw   s2, 8(sp)")
         self.emit("addi sp, sp, 16")
@@ -123,6 +127,9 @@ class Gen:
             for _ in range(r.randint(1, 4)):
                 self.simple(allow_mem=False)
             self.emit("ret")
+        self.lines += ["recurse:", "    addi sp, sp, -16", "    sw   ra, 12(sp)", "    addi x31, x31, -1",
+                       "    beqz x31, recurse_end", "    jal  ra, recurse", "recurse_end:",
+                       "    lw   ra, 12(sp)", "    addi sp, sp, 16", "    ret"]
         self.lines += ["    .data", "    .balign 4", "rbuf:"]
         for _ in range(64):
             self.emit(f".word {r.randint(0, 2**32 - 1)}")
@@ -182,7 +189,7 @@ def main():
 
     progs = []
     if args.workloads:
-        progs = ["hello", "fib", "fact", "qsort", "bintree", "matmul", "primes", "hazards"]
+        progs = ["hello", "fib", "fact", "qsort", "bintree", "matmul", "primes", "hazards", "deep"]
     else:
         gen_dir = os.path.join(sim.BUILD, "random")
         os.makedirs(gen_dir, exist_ok=True)
@@ -195,15 +202,24 @@ def main():
             progs.append(name)
 
     fails = 0
+    failed = []
     for prog in progs:
         n, code, msgs = check(prog, cores, simulator)
         bad = [m for m in msgs if m[1]]
         fails += bool(bad)
+        if bad:
+            failed.append(prog)
         status = "PASS" if not bad else "FAIL"
         print(f"{status}  {prog:10s} {n:7d} instructions  " +
               "  ".join(f"{c}: {'match' if not e else e}" for c, e in msgs))
-    print(f"\n{len(progs) - fails}/{len(progs)} programs match the golden model on: {', '.join(cores)}")
-    sys.exit(1 if fails else 0)
+    # The summary comes AFTER its own list. It names the program set and the
+    # simulator, so two runs in one terminal cannot be mistaken for each other.
+    kind = "C workloads" if args.workloads else "random programs"
+    print(f"\n{len(progs) - fails}/{len(progs)} {kind} match the golden model on: {', '.join(cores)}"
+          f" (simulator: {simulator})")
+    if failed:
+        print("FAILED: " + ", ".join(failed))
+    sys.exit(1 if failed else 0)
 
 
 if __name__ == "__main__":
